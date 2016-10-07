@@ -13,6 +13,8 @@ private:
 	puntosPerfil* perfilOriginal;
 	puntosPerfil* perfilSubdividido;
 	int numDivisiones;
+	int numPuntosPerfilOriginal;
+	void subdivisionPolilineas();
 public:
 	PagSubdivisionProfile(std::string archivoIN);
 	~PagSubdivisionProfile();
