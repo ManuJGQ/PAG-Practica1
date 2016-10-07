@@ -10,17 +10,17 @@ PagSubdivisionProfile::PagSubdivisionProfile(std::string archivoIN){
 	try {
 		// Leemos la primera linea del archivo
 		std::ifstream archivoPuntosPerfil;
-		archivoPuntosPerfil.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		archivoPuntosPerfil.open(archivoIN);
+
+		if (!archivoPuntosPerfil.good()) throw std::string("No se puedo leer el archivo");
+
 		std::getline(archivoPuntosPerfil, linea_actual);
 		coma = linea_actual.find(',');
 		numPuntos = stoi(linea_actual.substr(0, coma));
 		numDivisiones = stoi(linea_actual.substr(coma + 1, linea_actual.length()));
 
-		if (numPuntos < 2) {
-			std::cout << "ERROR! Se necesitan 2 o mas puntos" << std::endl;
-			return;
-		}
+		if (numPuntos < 2) throw std::string("Se necesitan 2 o mas puntos");
+
 		
 		perfilOriginal = new puntosPerfil[numPuntos];
 		puntosPerfil puntos;
@@ -31,11 +31,8 @@ PagSubdivisionProfile::PagSubdivisionProfile(std::string archivoIN){
 			coma = linea_actual.find(',');
 			puntos.x = stof(linea_actual.substr(0, coma));
 
-			if (puntos.x < 0) {
-				std::cout << "ERROR! Punto con coordenada X menor que 0" << std::endl;
-				return;
-			}
-
+			if (puntos.x < 0) throw std::string("Punto con coordenada X menor que 0");
+	
 			puntos.y = stof(linea_actual.substr(coma + 1, linea_actual.length()));
 
 			perfilOriginal[i] = puntos;
@@ -45,8 +42,8 @@ PagSubdivisionProfile::PagSubdivisionProfile(std::string archivoIN){
 			
 		archivoPuntosPerfil.close();
 
-	} catch (std::ifstream::failure &e) {
-		std::cerr << "Excepcion leyendo el archivo: " << e.what() << std::endl;
+	} catch (std::string &e) {
+		std::cout << "ERROR!: " << e << std::endl;
 	}
 }
 
