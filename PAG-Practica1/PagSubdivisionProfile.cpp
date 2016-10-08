@@ -19,7 +19,7 @@ PagSubdivisionProfile::PagSubdivisionProfile(std::string archivoIN){
 		numDivisiones = stoi(linea_actual.substr(coma + 1, linea_actual.length()));
 
 		if (numPuntosPerfilOriginal < 2) throw std::string("Se necesitan 2 o mas puntos");
-
+		if (numDivisiones < 0) throw std::string("No se permite un numero negativo de divisiones");
 		
 		perfilOriginal = new puntosPerfil[numPuntosPerfilOriginal];
 		puntosPerfil puntos;
