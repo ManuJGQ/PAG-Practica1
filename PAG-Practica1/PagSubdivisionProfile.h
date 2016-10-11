@@ -16,7 +16,7 @@ private:
 	int numPuntosPerfilOriginal;
 	void subdivisionPolilineas();
 public:
-	PagSubdivisionProfile(std::string archivoIN);
+	PagSubdivisionProfile();
 	~PagSubdivisionProfile();
 };
 

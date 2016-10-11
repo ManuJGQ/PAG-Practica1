@@ -24,12 +24,18 @@
     <ClCompile Include="PagRevolutionObject.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+    <ClCompile Include="PagAssistantClass.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PagSubdivisionProfile.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="PagRevolutionObject.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="PagAssistantClass.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

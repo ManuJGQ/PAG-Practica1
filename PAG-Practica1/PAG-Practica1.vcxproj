@@ -127,10 +127,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PagAssistantClass.cpp" />
     <ClCompile Include="PagRevolutionObject.cpp" />
     <ClCompile Include="PagSubdivisionProfile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PagAssistantClass.h" />
     <ClInclude Include="PagRevolutionObject.h" />
     <ClInclude Include="PagSubdivisionProfile.h" />
   </ItemGroup>

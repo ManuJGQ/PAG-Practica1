@@ -6,7 +6,6 @@
 #include "PagSubdivisionProfile.h"
 
 int main(int argc, char** argv) {
-	PagSubdivisionProfile perfilPrueba("prueba2.txt");
 	system("Pause");
 	return 0;
 }
