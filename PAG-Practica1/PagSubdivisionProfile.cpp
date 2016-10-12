@@ -3,10 +3,12 @@
 PagSubdivisionProfile::PagSubdivisionProfile() {};
 
 PagSubdivisionProfile::PagSubdivisionProfile(int _numPuntosPerfilOriginal, int _numDivisiones,
-	PuntosPerfil* _perfilOriginal): numPuntosPerfilOriginal(_numPuntosPerfilOriginal), 
-	numDivisiones(_numDivisiones), perfilOriginal(_perfilOriginal){
+	PuntosPerfil& _perfilOriginal): numPuntosPerfilOriginal(_numPuntosPerfilOriginal), 
+	numDivisiones(_numDivisiones){
 
-	//subdivisionPolilineas();
+	perfilOriginal = &(_perfilOriginal);
+
+	subdivisionPolilineas();
 }
 
 void PagSubdivisionProfile::subdivisionPolilineas() {
@@ -50,6 +52,6 @@ void PagSubdivisionProfile::subdivisionPolilineas() {
 }
 
 PagSubdivisionProfile::~PagSubdivisionProfile(){
-	delete [] perfilOriginal;
-	delete [] perfilSubdividido;
+	//delete[] perfilOriginal;
+	//delete[] perfilSubdividido;
 }

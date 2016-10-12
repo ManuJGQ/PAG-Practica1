@@ -16,7 +16,7 @@ private:
 	void subdivisionPolilineas();
 public:
 	PagSubdivisionProfile();
-	PagSubdivisionProfile(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil *_perfilOriginal);
+	PagSubdivisionProfile(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil& _perfilOriginal);
 	~PagSubdivisionProfile();
 };
 

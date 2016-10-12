@@ -7,7 +7,7 @@ class PagRevolutionObject{
 	PagSubdivisionProfile subdivisionProfiles;
 public:
 	PagRevolutionObject();
-	PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil* _perfilOriginal,
+	PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil& _perfilOriginal,
 		bool _flagBottomTape, bool _flagTopTape);
 	~PagRevolutionObject();
 };

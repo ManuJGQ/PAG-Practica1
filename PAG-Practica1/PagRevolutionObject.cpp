@@ -3,7 +3,7 @@
 PagRevolutionObject::PagRevolutionObject() {};
 
 PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones,
-	PuntosPerfil* _perfilOriginal, bool _flagBottomTape, bool _flagTopTape){
+	PuntosPerfil& _perfilOriginal, bool _flagBottomTape, bool _flagTopTape){
 
 	flagBottomTape = _flagBottomTape;
 	flagTopTape = _flagTopTape;
