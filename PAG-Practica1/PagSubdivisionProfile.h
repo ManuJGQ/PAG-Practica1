@@ -1,12 +1,9 @@
 #include <iostream>
 
+#include "Structs.h"
+
 #include <GL/glew.h> //glew SIEMPRE va antes del glfw
 #include <GLFW/glfw3.h>
-
-struct puntosPerfil {
-	float x;
-	float y;
-};
 
 class PagSubdivisionProfile{
 private:

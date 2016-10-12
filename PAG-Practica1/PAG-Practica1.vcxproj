@@ -132,6 +132,7 @@
     <ClCompile Include="PagSubdivisionProfile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Structs.h" />
     <ClInclude Include="PagAssistantClass.h" />
     <ClInclude Include="PagRevolutionObject.h" />
     <ClInclude Include="PagSubdivisionProfile.h" />
