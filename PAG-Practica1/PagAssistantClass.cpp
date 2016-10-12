@@ -5,8 +5,6 @@
 
 #define Epsilon 0.000001
 
-using namespace Structs;
-
 PagAssistantClass::PagAssistantClass(std::string archivoIN){
 	std::string linea_actual;
 	int numPuntosPerfilOriginal;
@@ -67,11 +65,13 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN){
 
 		perfilOriginal = perfilTemp;
 
+		revolutionObject = PagRevolutionObject(numPuntosPerfilModificado, numDivisiones, perfilOriginal, 
+			flagBottomTape, flagTopTape);
+
 	}
 	catch (std::string &e) {
 		std::cout << "ERROR: " << e << std::endl;
 	}
 }
-
 
 PagAssistantClass::~PagAssistantClass(){}
