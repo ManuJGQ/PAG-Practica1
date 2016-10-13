@@ -7,6 +7,6 @@
 
 int main(int argc, char** argv) {
 	PagAssistantClass("Prueba.txt");
-	std::cout << "UE" << std::endl;
+	system("pause");
 	return 0;
 }

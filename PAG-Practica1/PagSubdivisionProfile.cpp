@@ -37,12 +37,11 @@ void PagSubdivisionProfile::subdivisionPolilineas() {
 
 			perfiltemporal[(i * 2) - 1] = h1;
 			perfiltemporal[i * 2] = pi;
-			perfilSubdividido[i] = pi;
-			perfiltemporal[(i * 2) + 1] = h2;
+			if(i==numPuntos-2)perfiltemporal[(i * 2) + 1] = h2;
 
 		}
 		for (int i = 0; i < expectedNumberOfPoints; i++) {
-			std::cout << "Tanda de puntos " << j << std::endl;
+			std::cout << "Tanda de puntos " << j + 1 << std::endl;
 			std::cout << perfiltemporal[i].x << " " << perfiltemporal[i].y << std::endl;
 		}
 		numPuntos = expectedNumberOfPoints;
