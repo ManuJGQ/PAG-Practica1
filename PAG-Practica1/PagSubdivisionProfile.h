@@ -13,10 +13,13 @@ private:
 	PuntosPerfil* perfilSubdividido;
 	int numDivisiones;
 	int numPuntosPerfilOriginal;
+	int numPuntosPerfilSubdividido;
 	void subdivisionPolilineas();
 public:
 	PagSubdivisionProfile();
 	PagSubdivisionProfile(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil& _perfilOriginal);
+	PuntosPerfil& getPerfil() { return *perfilSubdividido; }
+	int getNumPuntosPerfil() { return numPuntosPerfilSubdividido; }
 	~PagSubdivisionProfile();
 };
 

@@ -66,7 +66,7 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN){
 
 		perfil = perfilTemp;
 
-		revolutionObject = PagRevolutionObject(numPuntosPerfilOriginal, numDivisiones, *(perfil), 
+		revolutionObject = PagRevolutionObject(numPuntosPerfilOriginal, numDivisiones, *perfil, 
 			flagBottomTape, flagTopTape);
 
 	}
