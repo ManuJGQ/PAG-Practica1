@@ -37,7 +37,7 @@ void PagSubdivisionProfile::subdivisionPolilineas() {
 
 			perfiltemporal[(i * 2) - 1] = h1;
 			perfiltemporal[i * 2] = pi;
-			if(i==numPuntos-2)perfiltemporal[(i * 2) + 1] = h2;
+			if(i == numPuntos - 2)perfiltemporal[(i * 2) + 1] = h2;
 
 		}
 		for (int i = 0; i < expectedNumberOfPoints; i++) {
