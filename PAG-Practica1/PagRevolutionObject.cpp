@@ -24,6 +24,8 @@ void PagRevolutionObject::revolution() {
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
+	// VERTICES
+
 	float angleRadIncrement = (2 * PI) / 20;
 
 	for (int j = 0; j < numPuntosPerfil; j++) {
@@ -38,9 +40,49 @@ void PagRevolutionObject::revolution() {
 		}
 	}
 
-	for (int j = 0; j < 20; j++) {
-		for (int i = 0; i < numPuntosPerfil; i++) {
+	// NORMALES
 
+	for (int j = 0; j < numPuntosPerfil; j++) {
+		for (int i = 0; i < 20; i++) {
+			PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
+			PuntosVertices pi = geometria[(i*numPuntosPerfil - 1) + j].vertice;
+			PuntosVertices p2 = geometria[(i*numPuntosPerfil - 1) + j + 1].vertice;
+
+			PuntosVertices v1;
+			v1.x = pi.x - p1.x;
+			v1.y = pi.y - p1.y;
+			v1.z = pi.z - p1.z;
+
+			float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+			v1.x = v1.x / modV1;
+			v1.y = v1.y / modV1;
+			v1.z = v1.z / modV1;
+
+			float xTemp = v1.x;
+			v1.x = v1.y;
+			v1.y = xTemp * -1;
+
+			PuntosVertices vi;
+			vi.x = p2.x - pi.x;
+			vi.y = p2.y - pi.y;
+			vi.z = p2.z - pi.z;
+
+			float modVi = sqrt((vi.x * vi.x) + (vi.y * vi.y) + (vi.z * vi.z));
+			vi.x = vi.x / modVi;
+			vi.y = vi.y / modVi;
+			vi.z = vi.z / modVi;
+
+			xTemp = vi.x;
+			vi.x = vi.y;
+			vi.y = xTemp * -1;
+
+			NormalesTangentes normal;
+
+			normal.x = (v1.x + vi.x) / 2;
+			normal.y = (v1.y + vi.y) / 2;
+			normal.z = (v1.z + vi.z) / 2;
+
+			geometria[(i*numPuntosPerfil - 1) + j].normal = normal;
 		}
 	}
 }
