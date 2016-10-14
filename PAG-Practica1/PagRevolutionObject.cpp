@@ -85,6 +85,31 @@ void PagRevolutionObject::revolution() {
 			geometria[(i*numPuntosPerfil - 1) + j].normal = normal;
 		}
 	}
+
+	// TANGENTES
+
+	for (int j = 0; j < numPuntosPerfil; j++) {
+		for (int i = 0; i < 20; i++) {
+			NormalesTangentes tangente;
+
+			tangente.x = -1 * sin(i * angleRadIncrement);
+			tangente.y = 0;
+			tangente.z = -1 * cos(i * angleRadIncrement);
+
+			geometria[(i*numPuntosPerfil - 1) + j].tangente = tangente;
+		}
+	}
+
+	// COORDENADAS TEXTURAS
+
+	for (int j = 0; j < 20; j++) {
+		for (int i = 0; i < numPuntosPerfil; i++) {
+
+		}
+	}
+
+	// INDICES
+
 }
 
 PagRevolutionObject::~PagRevolutionObject(){}
