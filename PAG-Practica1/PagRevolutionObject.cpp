@@ -108,6 +108,8 @@ void PagRevolutionObject::revolution() {
 		}
 	}
 
+	std::cout << numPuntosPerfil << std::endl;
+
 	// INDICES
 
 }
