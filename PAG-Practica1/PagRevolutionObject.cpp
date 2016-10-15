@@ -22,6 +22,7 @@ void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
 	geometria = new Geometria[numPuntosPerfil * 20];
 	coordtext = new CoordTexturas[numPuntosPerfil * 20];
+	indices = new int[numPuntosPerfil * 20 * 2];
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
@@ -141,10 +142,16 @@ void PagRevolutionObject::revolution() {
 		delete[] modulo;
 	}
 
-	std::cout << numPuntosPerfil << std::endl;
-
 	// INDICES
 
+	int k = 0;
+	for (int i = 0; i < 20; i++) {
+		for (int j = 0; j < numPuntosPerfil; j++) {
+			indices[k] = i + (j * 21);
+			indices[k + 1] = (i + 1) + (j * 21);
+			k += 2;
+		}
+	}
 }
 
 PagRevolutionObject::~PagRevolutionObject(){}
