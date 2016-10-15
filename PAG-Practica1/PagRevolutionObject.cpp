@@ -21,6 +21,7 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
 	geometria = new Geometria[numPuntosPerfil * 20];
+	coordtext = new CoordTexturas[numPuntosPerfil * 20];
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
@@ -103,9 +104,41 @@ void PagRevolutionObject::revolution() {
 	// COORDENADAS TEXTURAS
 
 	for (int j = 0; j < 20; j++) {
+
+		float s = j * (1 / 20);
+
+		float *modulo = new float[numPuntosPerfil];
+
+		float sumatorio = 0;
+
+		modulo[0] = sumatorio;
+
+		for (int i = 1; i < numPuntosPerfil; i++) {
+
+			PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
+			PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+
+			PuntosVertices v1;
+			v1.x = p1.x - p2.x;
+			v1.y = p1.y - p2.y;
+			v1.z = p1.z - p2.z;
+
+			float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+
+			sumatorio += modV1;
+
+			modulo[i] = sumatorio;
+		}
+
 		for (int i = 0; i < numPuntosPerfil; i++) {
 
+			float t = (modulo[i]) / (sumatorio);
+
+			coordtext[(j*numPuntosPerfil - 1) + i].s = s;
+			coordtext[(j*numPuntosPerfil - 1) + i].t = t;
 		}
+
+		delete[] modulo;
 	}
 
 	std::cout << numPuntosPerfil << std::endl;
