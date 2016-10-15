@@ -6,7 +6,10 @@
 #include "PagAssistantClass.h"
 
 int main(int argc, char** argv) {
-	PagAssistantClass("Prueba.txt");
+	char* docdir = getenv("userprofile");
+	std::string path = docdir;
+	path += "/Desktop/prueba.txt";
+	PagAssistantClass(std::string(path));
 	system("pause");
 	return 0;
 }
