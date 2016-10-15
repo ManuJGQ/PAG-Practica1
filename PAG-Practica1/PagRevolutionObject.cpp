@@ -31,14 +31,71 @@ void PagRevolutionObject::revolution() {
 	float angleRadIncrement = (2 * PI) / 20;
 
 	for (int j = 0; j < numPuntosPerfil; j++) {
-		for (int i = 0; i < 20; i++) {
-			float x = perfil[j].x * cos(angleRadIncrement * i);
-			float z = perfil[j].x * -sin(angleRadIncrement * i);
-			PuntosVertices vert;
-			vert.x = x;
-			vert.y = perfil[j].y;
-			vert.z = z;
-			geometria[(i*numPuntosPerfil - 1) + j].vertice = vert;
+		if (flagTopTape && flagBottomTape) {
+			if (j == 0) {
+				PuntosVertices vert;
+				vert.x = 0;
+				vert.y = perfil[j].y;
+				vert.z = 0;
+				geometria[(20 * numPuntosPerfil) - 2].vertice = vert;
+			}
+			else if (j == numPuntosPerfil - 1) {
+				PuntosVertices vert;
+				vert.x = 0;
+				vert.y = perfil[j].y;
+				vert.z = 0;
+				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+			}
+			else {
+				for (int i = 0; i < 20; i++) {
+					float x = perfil[j].x * cos(angleRadIncrement * i);
+					float z = perfil[j].x * -sin(angleRadIncrement * i);
+					PuntosVertices vert;
+					vert.x = x;
+					vert.y = perfil[j].y;
+					vert.z = z;
+					geometria[((i*numPuntosPerfil - 1) + j) - 1].vertice = vert;
+				}
+			}
+
+		}
+		else if(flagTopTape || flagBottomTape) {
+			if (j == 0 && flagBottomTape) {
+				PuntosVertices vert;
+				vert.x = 0;
+				vert.y = perfil[j].y;
+				vert.z = 0;
+				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+			}
+			else if (j == numPuntosPerfil - 1 && flagTopTape) {
+				PuntosVertices vert;
+				vert.x = 0;
+				vert.y = perfil[j].y;
+				vert.z = 0;
+				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+			}
+			else {
+				for (int i = 0; i < 20; i++) {
+					float x = perfil[j].x * cos(angleRadIncrement * i);
+					float z = perfil[j].x * -sin(angleRadIncrement * i);
+					PuntosVertices vert;
+					vert.x = x;
+					vert.y = perfil[j].y;
+					vert.z = z;
+					geometria[((i*numPuntosPerfil - 1) + j) - 1].vertice = vert;
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < 20; i++) {
+				float x = perfil[j].x * cos(angleRadIncrement * i);
+				float z = perfil[j].x * -sin(angleRadIncrement * i);
+				PuntosVertices vert;
+				vert.x = x;
+				vert.y = perfil[j].y;
+				vert.z = z;
+				geometria[(i*numPuntosPerfil - 1) + j].vertice = vert;
+			}
 		}
 	}
 
