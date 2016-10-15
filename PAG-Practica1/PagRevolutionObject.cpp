@@ -20,9 +20,21 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 
 void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
-	geometria = new Geometria[numPuntosPerfil * 20];
-	coordtext = new CoordTexturas[numPuntosPerfil * 20];
-	indices = new int[numPuntosPerfil * 20 * 2];
+	if (flagBottomTape && flagTopTape) {
+		geometria = new Geometria[((numPuntosPerfil - 2) * 20) + 2];
+		coordtext = new CoordTexturas[((numPuntosPerfil - 2) * 20) + 2];		//CASO 1: DOS TAPAS
+		indices = new int[(((numPuntosPerfil - 2) * 20) * 2) + 2];
+	}
+	else if (flagBottomTape || flagTopTape) {
+		geometria = new Geometria[((numPuntosPerfil - 1) * 20) + 1];
+		coordtext = new CoordTexturas[((numPuntosPerfil - 1) * 20) + 1];		//CASO 2: UNA TAPA
+		indices = new int[(((numPuntosPerfil - 1) * 20) * 2) + 1];
+	}
+	else {
+		geometria = new Geometria[numPuntosPerfil * 20];
+		coordtext = new CoordTexturas[numPuntosPerfil * 20];			//CASO 3: SIN TAPAS
+		indices = new int[numPuntosPerfil * 20 * 2];
+	}
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
@@ -396,52 +408,265 @@ void PagRevolutionObject::revolution() {
 
 	// COORDENADAS TEXTURAS
 
-	for (int j = 0; j < 20; j++) {
+	if (flagTopTape && flagBottomTape) {
+		for (int i = 0; i < 20; i++) {
+			float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
+			float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
+			coordtext[(i * numPuntosPerfil - 1)].s = s;
+			coordtext[(i * numPuntosPerfil - 1)].t = t;
+			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
+			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
+		}
+		coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
+		coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
+		coordtext[(numPuntosPerfil * 18)].s = 0.5;
+		coordtext[(numPuntosPerfil * 18)].t = 0.5;
 
-		float s = j * (1 / 20);
+		float *modulo = new float[numPuntosPerfil - 4];
 
+		for (int j = 0; j < 20; j++) {
+
+			float s = j * (1 / 20);
+
+			float sumatorio = 0;
+
+			modulo[0] = sumatorio;
+
+			for (int i = 3; i < numPuntosPerfil - 2; i++) {
+
+				PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
+				PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+
+				PuntosVertices v1;
+				v1.x = p1.x - p2.x;
+				v1.y = p1.y - p2.y;
+				v1.z = p1.z - p2.z;
+
+				float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+
+				sumatorio += modV1;
+
+				//std::cout << numPuntosPerfil - 4 << " - " << i - 2 << " - " << modulo[i - 2] << std::endl;
+
+				modulo[i - 2] = sumatorio;
+			}
+
+			for (int i = 2; i < numPuntosPerfil - 2; i++) {
+
+				std::cout << numPuntosPerfil - 4 << " - " << i - 2 << " - " << modulo[i - 2] << std::endl;
+
+				float t = (modulo[i - 2]) / (sumatorio);
+
+				coordtext[(j*numPuntosPerfil - 1) + i -1].s = s;
+				coordtext[(j*numPuntosPerfil - 1) + i -1].t = t;
+			}
+		}
+
+		/*std::cout << "BORRO" << std::endl;
+
+		delete[] modulo;*/
+	}
+	else if (flagTopTape || flagBottomTape) {
+		if (flagTopTape) {
+			for (int i = 0; i < 20; i++) {
+				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
+				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
+				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
+				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
+			}
+			coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
+			coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
+
+			float *modulo = new float[numPuntosPerfil - 2];
+			
+			for (int j = 0; j < 20; j++) {
+
+				float s = j * (1 / 20);
+
+				float sumatorio = 0;
+
+				modulo[0] = sumatorio;
+
+				for (int i = 1; i < numPuntosPerfil - 2; i++) {
+
+					PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
+					PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+
+					PuntosVertices v1;
+					v1.x = p1.x - p2.x;
+					v1.y = p1.y - p2.y;
+					v1.z = p1.z - p2.z;
+
+					float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+
+					sumatorio += modV1;
+
+					modulo[i] = sumatorio;
+				}
+
+				for (int i = 0; i < numPuntosPerfil - 2; i++) {
+
+					float t = (modulo[i]) / (sumatorio);
+
+					coordtext[(j*numPuntosPerfil - 1) + i - 1].s = s;
+					coordtext[(j*numPuntosPerfil - 1) + i - 1].t = t;
+				}
+
+				//delete[] modulo;
+			}
+		}
+		else {
+			for (int i = 0; i < 20; i++) {
+				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
+				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
+				coordtext[(i * numPuntosPerfil - 1)].s = s;
+				coordtext[(i * numPuntosPerfil - 1)].t = t;
+			}
+			coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
+			coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
+
+			float *modulo = new float[numPuntosPerfil - 2];
+
+			for (int j = 0; j < 20; j++) {
+
+				float s = j * (1 / 20);
+
+				float sumatorio = 0;
+
+				modulo[0] = sumatorio;
+
+				for (int i = 3; i < numPuntosPerfil; i++) {
+
+					PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
+					PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+
+					PuntosVertices v1;
+					v1.x = p1.x - p2.x;
+					v1.y = p1.y - p2.y;
+					v1.z = p1.z - p2.z;
+
+					float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+
+					sumatorio += modV1;
+
+					modulo[i - 2] = sumatorio;
+				}
+
+				for (int i = 2; i < numPuntosPerfil; i++) {
+
+					float t = (modulo[i - 2]) / (sumatorio);
+
+					coordtext[(j*numPuntosPerfil - 1) + i].s = s;
+					coordtext[(j*numPuntosPerfil - 1) + i].t = t;
+				}
+
+				//delete[] modulo;
+			}
+		}
+	}
+	else {
 		float *modulo = new float[numPuntosPerfil];
 
-		float sumatorio = 0;
+		for (int j = 0; j < 20; j++) {
 
-		modulo[0] = sumatorio;
+			float s = j * (1 / 20);
 
-		for (int i = 1; i < numPuntosPerfil; i++) {
+			float sumatorio = 0;
 
-			PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
-			PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+			modulo[0] = sumatorio;
 
-			PuntosVertices v1;
-			v1.x = p1.x - p2.x;
-			v1.y = p1.y - p2.y;
-			v1.z = p1.z - p2.z;
+			for (int i = 1; i < numPuntosPerfil; i++) {
 
-			float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+				PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
+				PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
 
-			sumatorio += modV1;
+				PuntosVertices v1;
+				v1.x = p1.x - p2.x;
+				v1.y = p1.y - p2.y;
+				v1.z = p1.z - p2.z;
 
-			modulo[i] = sumatorio;
+				float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+
+				sumatorio += modV1;
+
+				modulo[i] = sumatorio;
+			}
+
+			for (int i = 0; i < numPuntosPerfil; i++) {
+
+				float t = (modulo[i]) / (sumatorio);
+
+				coordtext[(j*numPuntosPerfil - 1) + i].s = s;
+				coordtext[(j*numPuntosPerfil - 1) + i].t = t;
+			}
+
+			//delete[] modulo;
 		}
-
-		for (int i = 0; i < numPuntosPerfil; i++) {
-
-			float t = (modulo[i]) / (sumatorio);
-
-			coordtext[(j*numPuntosPerfil - 1) + i].s = s;
-			coordtext[(j*numPuntosPerfil - 1) + i].t = t;
-		}
-
-		delete[] modulo;
 	}
 
 	// INDICES
 
-	int k = 0;
-	for (int i = 0; i < 20; i++) {
-		for (int j = 0; j < numPuntosPerfil; j++) {
-			indices[k] = i + (j * 21);
-			indices[k + 1] = (i + 1) + (j * 21);
-			k += 2;
+	if (flagBottomTape && flagTopTape) {
+		int k = 1;
+		indices[0] = 20;
+		for (int i = 0; i < 20; i++) {
+			indices[k] = i;
+			k ++;
+		}
+		for (int i = 0; i < 20; i++) {
+			for (int j = 2; j < numPuntosPerfil - 2; j++) {
+				indices[k] = i + (j * 21);
+				indices[k + 1] = (i + 1) + (j * 21);
+				k += 2;
+			}
+		}
+		for (int i = 0; i < 20; i++) {
+			indices[k] = i;
+			k++;
+		}
+		indices[k] = 20;
+
+	}
+	else if (flagBottomTape || flagTopTape) {
+		if (flagBottomTape) {
+			int k = 1;
+			indices[0] = 20;
+			for (int i = 0; i < 20; i++) {
+				indices[k] = i;
+				k++;
+			}
+			for (int i = 0; i < 20; i++) {
+				for (int j = 2; j < numPuntosPerfil; j++) {
+					indices[k] = i + (j * 21);
+					indices[k + 1] = (i + 1) + (j * 21);
+					k += 2;
+				}
+			}
+		}
+		else {
+			int k = 0;
+			for (int i = 0; i < 20; i++) {
+				for (int j = 0; j < numPuntosPerfil - 2; j++) {
+					indices[k] = i + (j * 21);
+					indices[k + 1] = (i + 1) + (j * 21);
+					k += 2;
+				}
+			}
+			for (int i = 0; i < 20; i++) {
+				indices[k] = i;
+				k++;
+			}
+			indices[k] = 20;
+		}
+	}
+	else {
+		int k = 0;
+		for (int i = 0; i < 20; i++) {
+			for (int j = 0; j < numPuntosPerfil; j++) {
+				indices[k] = i + (j * 21);
+				indices[k + 1] = (i + 1) + (j * 21);
+				k += 2;
+			}
 		}
 	}
 }
