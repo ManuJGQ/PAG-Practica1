@@ -71,7 +71,6 @@ void PagRevolutionObject::revolution() {
 				for (int i = 0; i < slices; i++) {
 					float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
 					float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
-					if (j == 1) std::cout << perfil[j].x << " - " << angleRadIncrement * i << " - " << i << " - " << perfil[j].x * -sin(angleRadIncrement * i) << std::endl;
 
 					PuntosVertices vert;
 					vert.x = x;
@@ -250,9 +249,19 @@ void PagRevolutionObject::revolution() {
 						geometria[j * slices + i].normal = normal;
 					}
 					else {
-						PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
-						PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
-						PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
+						PuntosVertices p1;
+						PuntosVertices pi;
+						PuntosVertices p2;
+						if (flagBottomTape) {
+							p1 = geometria[(j - 1) * slices + i - 1].vertice;
+							pi = geometria[(j - 1) * slices + i].vertice;
+							p2 = geometria[(j - 1) * slices + i + 1].vertice;
+						}
+						else {
+							p1 = geometria[j * slices + i - 1].vertice;
+							pi = geometria[j * slices + i].vertice;
+							p2 = geometria[j * slices + i + 1].vertice;
+						}
 
 						PuntosVertices v1;
 						v1.x = pi.x - p1.x;
@@ -296,9 +305,9 @@ void PagRevolutionObject::revolution() {
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
-				PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
-				PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
-				PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
+				PuntosVertices p1 = geometria[j * slices + i - 1].vertice;
+				PuntosVertices pi = geometria[j * slices + i].vertice;
+				PuntosVertices p2 = geometria[j * slices + i + 1].vertice;
 
 				PuntosVertices v1;
 				v1.x = pi.x - p1.x;
@@ -423,30 +432,30 @@ void PagRevolutionObject::revolution() {
 		for (int i = 0; i < slices; i++) {
 			float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 			float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-			coordtext[(i * numPuntosPerfil - 1)].s = s;
-			coordtext[(i * numPuntosPerfil - 1)].t = t;
-			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
-			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
+			coordtext[i].s = s;
+			coordtext[i].t = t;
+			coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
+			coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
 		}
-		coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
-		coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
-		coordtext[(numPuntosPerfil * slices - 2)].s = 0.5;
-		coordtext[(numPuntosPerfil * slices - 2)].t = 0.5;
+		coordtext[tamaGeometriaCoordText - 2].s = 0.5;
+		coordtext[tamaGeometriaCoordText - 2].t = 0.5;
+		coordtext[tamaGeometriaCoordText - 1].s = 0.5;
+		coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
 		float *modulo = new float[numPuntosPerfil - 4];
 
 		for (int j = 0; j < slices; j++) {
 
-			float s = j * (1 / slices);
+			float s = j * float(float(1) / float(slices));
 
 			float sumatorio = 0;
 
 			modulo[0] = sumatorio;
 
-			for (int i = 3; i < numPuntosPerfil - 2; i++) {
+			for (int i = 2; i < numPuntosPerfil - 2; i++) {
 
-				PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
-				PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+				PuntosVertices p1 = geometria[(i - 1) * slices + j].vertice;
+				PuntosVertices p2 = geometria[(i - 1) * slices + j - 1].vertice;
 
 				PuntosVertices v1;
 				v1.x = p1.x - p2.x;
@@ -464,8 +473,8 @@ void PagRevolutionObject::revolution() {
 
 				float t = (modulo[i - 2]) / (sumatorio);
 
-				coordtext[(j*numPuntosPerfil - 1) + i -1].s = s;
-				coordtext[(j*numPuntosPerfil - 1) + i -1].t = t;
+				coordtext[(i - 1) * slices + j].s = s;
+				coordtext[(i - 1) * slices + j].t = t;
 			}
 		}
 
@@ -475,17 +484,17 @@ void PagRevolutionObject::revolution() {
 			for (int i = 0; i < slices; i++) {
 				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
-				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
+				coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
+				coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
 			}
-			coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
-			coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
+			coordtext[tamaGeometriaCoordText - 1].s = 0.5;
+			coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
 			float *modulo = new float[numPuntosPerfil - 2];
 			
 			for (int j = 0; j < slices; j++) {
 
-				float s = j * (1 / slices);
+				float s = j * float(float(1) / float(slices));
 
 				float sumatorio = 0;
 
@@ -493,8 +502,8 @@ void PagRevolutionObject::revolution() {
 
 				for (int i = 1; i < numPuntosPerfil - 2; i++) {
 
-					PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
-					PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+					PuntosVertices p1 = geometria[i * slices + j].vertice;
+					PuntosVertices p2 = geometria[i * slices + j - 1].vertice;
 
 					PuntosVertices v1;
 					v1.x = p1.x - p2.x;
@@ -512,8 +521,8 @@ void PagRevolutionObject::revolution() {
 
 					float t = (modulo[i]) / (sumatorio);
 
-					coordtext[(j*numPuntosPerfil - 1) + i - 1].s = s;
-					coordtext[(j*numPuntosPerfil - 1) + i - 1].t = t;
+					coordtext[i * slices + j].s = s;
+					coordtext[i * slices + j].t = t;
 				}
 
 			}
@@ -522,17 +531,17 @@ void PagRevolutionObject::revolution() {
 			for (int i = 0; i < slices; i++) {
 				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				coordtext[(i * numPuntosPerfil - 1)].s = s;
-				coordtext[(i * numPuntosPerfil - 1)].t = t;
+				coordtext[i].s = s;
+				coordtext[i].t = t;
 			}
-			coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
-			coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
+			coordtext[tamaGeometriaCoordText - 1].s = 0.5;
+			coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
 			float *modulo = new float[numPuntosPerfil - 2];
 
 			for (int j = 0; j < slices; j++) {
 
-				float s = j * (1 / slices);
+				float s = j * float(float(1) / float(slices));
 
 				float sumatorio = 0;
 
@@ -540,8 +549,8 @@ void PagRevolutionObject::revolution() {
 
 				for (int i = 3; i < numPuntosPerfil; i++) {
 
-					PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
-					PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+					PuntosVertices p1 = geometria[(i - 1) * slices + j].vertice;
+					PuntosVertices p2 = geometria[(i - 1) * slices + j - 1].vertice;
 
 					PuntosVertices v1;
 					v1.x = p1.x - p2.x;
@@ -559,8 +568,8 @@ void PagRevolutionObject::revolution() {
 
 					float t = (modulo[i - 2]) / (sumatorio);
 
-					coordtext[(j*numPuntosPerfil - 1) + i].s = s;
-					coordtext[(j*numPuntosPerfil - 1) + i].t = t;
+					coordtext[(i - 1) * slices + j].s = s;
+					coordtext[(i - 1) * slices + j].t = t;;
 				}
 
 			}
@@ -571,7 +580,7 @@ void PagRevolutionObject::revolution() {
 
 		for (int j = 0; j < slices; j++) {
 
-			float s = j * (1 / slices);
+			float s = j * float(float(1) / float(slices));
 
 			float sumatorio = 0;
 
@@ -579,8 +588,8 @@ void PagRevolutionObject::revolution() {
 
 			for (int i = 1; i < numPuntosPerfil; i++) {
 
-				PuntosVertices p1 = geometria[(j*numPuntosPerfil - 1) + i].vertice;
-				PuntosVertices p2 = geometria[(j*numPuntosPerfil - 1) + i - 1].vertice;
+				PuntosVertices p1 = geometria[i * slices + j].vertice;
+				PuntosVertices p2 = geometria[i * slices + j - 1].vertice;
 
 				PuntosVertices v1;
 				v1.x = p1.x - p2.x;
@@ -598,8 +607,8 @@ void PagRevolutionObject::revolution() {
 
 				float t = (modulo[i]) / (sumatorio);
 
-				coordtext[(j*numPuntosPerfil - 1) + i].s = s;
-				coordtext[(j*numPuntosPerfil - 1) + i].t = t;
+				coordtext[i * slices + j].s = s;
+				coordtext[i * slices + j].t = t;
 			}
 
 		}
