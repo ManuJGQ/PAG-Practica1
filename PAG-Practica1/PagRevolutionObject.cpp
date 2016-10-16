@@ -69,8 +69,10 @@ void PagRevolutionObject::revolution() {
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
-					float x = perfil[j].x * cos(angleRadIncrement * i);
-					float z = perfil[j].x * -sin(angleRadIncrement * i);
+					float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
+					float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
+					if (j == 1) std::cout << perfil[j].x << " - " << angleRadIncrement * i << " - " << i << " - " << perfil[j].x * -sin(angleRadIncrement * i) << std::endl;
+
 					PuntosVertices vert;
 					vert.x = x;
 					vert.y = perfil[j].y;
@@ -97,8 +99,8 @@ void PagRevolutionObject::revolution() {
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
-					float x = perfil[j].x * cos(angleRadIncrement * i);
-					float z = perfil[j].x * -sin(angleRadIncrement * i);
+					float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
+					float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
 					PuntosVertices vert;
 					vert.x = x;
 					vert.y = perfil[j].y;
@@ -110,8 +112,8 @@ void PagRevolutionObject::revolution() {
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
-				float x = perfil[j].x * cos(angleRadIncrement * i);
-				float z = perfil[j].x * -sin(angleRadIncrement * i);
+				float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
+				float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
 				PuntosVertices vert;
 				vert.x = x;
 				vert.y = perfil[j].y;
@@ -164,9 +166,9 @@ void PagRevolutionObject::revolution() {
 						geometria[(j - 1) * slices + i].normal = normal;
 					}
 					else {
-						PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
-						PuntosVertices pi = geometria[(i*numPuntosPerfil - 1) + j].vertice;
-						PuntosVertices p2 = geometria[(i*numPuntosPerfil - 1) + j + 1].vertice;
+						PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
+						PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
+						PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
 
 						PuntosVertices v1;
 						v1.x = pi.x - p1.x;
@@ -248,9 +250,9 @@ void PagRevolutionObject::revolution() {
 						geometria[j * slices + i].normal = normal;
 					}
 					else {
-						PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
-						PuntosVertices pi = geometria[(i*numPuntosPerfil - 1) + j].vertice;
-						PuntosVertices p2 = geometria[(i*numPuntosPerfil - 1) + j + 1].vertice;
+						PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
+						PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
+						PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
 
 						PuntosVertices v1;
 						v1.x = pi.x - p1.x;
@@ -294,9 +296,9 @@ void PagRevolutionObject::revolution() {
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
-				PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
-				PuntosVertices pi = geometria[(i*numPuntosPerfil - 1) + j].vertice;
-				PuntosVertices p2 = geometria[(i*numPuntosPerfil - 1) + j + 1].vertice;
+				PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
+				PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
+				PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
 
 				PuntosVertices v1;
 				v1.x = pi.x - p1.x;
@@ -363,9 +365,9 @@ void PagRevolutionObject::revolution() {
 				for (int i = 0; i < slices; i++) {
 					NormalesTangentes tangente;
 
-					tangente.x = -1 * sin(i * angleRadIncrement);
+					tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
 					tangente.y = 0;
-					tangente.z = -1 * cos(i * angleRadIncrement);
+					tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
 
 					geometria[(j - 1) * slices + i].tangente = tangente;
 				}
@@ -393,9 +395,9 @@ void PagRevolutionObject::revolution() {
 				for (int i = 0; i < slices; i++) {
 					NormalesTangentes tangente;
 
-					tangente.x = -1 * sin(i * angleRadIncrement);
+					tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
 					tangente.y = 0;
-					tangente.z = -1 * cos(i * angleRadIncrement);
+					tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
 
 					if(flagBottomTape) geometria[(j - 1) * slices + i].tangente = tangente;
 					else geometria[j * slices + i].tangente = tangente;
@@ -406,9 +408,9 @@ void PagRevolutionObject::revolution() {
 			for (int i = 0; i < slices; i++) {
 				NormalesTangentes tangente;
 
-				tangente.x = -1 * sin(i * angleRadIncrement);
+				tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
 				tangente.y = 0;
-				tangente.z = -1 * cos(i * angleRadIncrement);
+				tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
 
 				geometria[j * slices + i].tangente = tangente;
 			}
