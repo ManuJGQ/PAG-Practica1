@@ -23,19 +23,25 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
 	if (flagBottomTape && flagTopTape) {
-		geometria = new Geometria[((numPuntosPerfil - 2) * slices) + 2];
-		coordtext = new CoordTexturas[((numPuntosPerfil - 2) * slices) + 2];		//CASO 1: DOS TAPAS
-		indices = new int[(((numPuntosPerfil - 2) * slices) * 2) + 2];
+		tamaGeometriaCoordText = ((numPuntosPerfil - 2) * slices) + 2;
+		tamaIndices = (((numPuntosPerfil - 2) * slices) * 2) + 2;
+		geometria = new Geometria[tamaGeometriaCoordText];
+		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 1: DOS TAPAS
+		indices = new int[tamaIndices];
 	}
 	else if (flagBottomTape || flagTopTape) {
-		geometria = new Geometria[((numPuntosPerfil - 1) * slices) + 1];
-		coordtext = new CoordTexturas[((numPuntosPerfil - 1) * slices) + 1];		//CASO 2: UNA TAPA
-		indices = new int[(((numPuntosPerfil - 1) * slices) * 2) + 1];
+		tamaGeometriaCoordText = ((numPuntosPerfil - 1) * slices) + 1;
+		tamaIndices = (((numPuntosPerfil - 1) * slices) * 2) + 1;
+		geometria = new Geometria[tamaGeometriaCoordText];
+		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 2: UNA TAPA
+		indices = new int[tamaIndices];
 	}
 	else {
-		geometria = new Geometria[numPuntosPerfil * slices];
-		coordtext = new CoordTexturas[numPuntosPerfil * slices];			//CASO 3: SIN TAPAS
-		indices = new int[numPuntosPerfil * slices * 2];
+		tamaGeometriaCoordText = numPuntosPerfil * slices;
+		tamaIndices = numPuntosPerfil * slices * 2;
+		geometria = new Geometria[tamaGeometriaCoordText];
+		coordtext = new CoordTexturas[tamaGeometriaCoordText];			//CASO 3: SIN TAPAS
+		indices = new int[tamaIndices];
 	}
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
@@ -51,14 +57,15 @@ void PagRevolutionObject::revolution() {
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(slices * numPuntosPerfil) - 2].vertice = vert;
+				geometria[tamaGeometriaCoordText - 2].vertice = vert;
+				std::cout << numPuntosPerfil << std::endl;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				PuntosVertices vert;
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
+				geometria[tamaGeometriaCoordText - 1].vertice = vert;
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
@@ -68,7 +75,7 @@ void PagRevolutionObject::revolution() {
 					vert.x = x;
 					vert.y = perfil[j].y;
 					vert.z = z;
-					geometria[((i*numPuntosPerfil - 1) + j) - 1].vertice = vert;
+					geometria[(j-1) * slices + i].vertice = vert;
 				}
 			}
 
@@ -79,14 +86,14 @@ void PagRevolutionObject::revolution() {
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
+				geometria[tamaGeometriaCoordText - 1].vertice = vert;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				PuntosVertices vert;
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
+				geometria[tamaGeometriaCoordText - 1].vertice = vert;
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
@@ -96,8 +103,8 @@ void PagRevolutionObject::revolution() {
 					vert.x = x;
 					vert.y = perfil[j].y;
 					vert.z = z;
-					if(flagBottomTape) geometria[((i*numPuntosPerfil - 1) + j) - 1].vertice = vert;
-					else geometria[((i*numPuntosPerfil - 1) + j)].vertice = vert;
+					if(flagBottomTape) geometria[(j - 1) * slices + i].vertice = vert;
+					else geometria[j * slices + i].vertice = vert;
 				}
 			}
 		}
@@ -109,7 +116,7 @@ void PagRevolutionObject::revolution() {
 				vert.x = x;
 				vert.y = perfil[j].y;
 				vert.z = z;
-				geometria[(i*numPuntosPerfil - 1) + j].vertice = vert;
+				geometria[j * slices + i].vertice = vert;
 			}
 		}
 	}
@@ -125,7 +132,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = -1;
 				normal.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 2].normal = normal;
+				geometria[tamaGeometriaCoordText - 2].normal = normal;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				NormalesTangentes normal;
@@ -134,7 +141,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = 1;
 				normal.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
+				geometria[tamaGeometriaCoordText - 1].normal = normal;
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
@@ -145,7 +152,7 @@ void PagRevolutionObject::revolution() {
 						normal.y = -1;
 						normal.z = 0;
 
-						geometria[((i*numPuntosPerfil - 1) + j) - 1].normal = normal;
+						geometria[(j - 1) * slices + i].normal = normal;
 					}
 					else if (j == numPuntosPerfil - 2) {
 						NormalesTangentes normal;
@@ -154,7 +161,7 @@ void PagRevolutionObject::revolution() {
 						normal.y = 1;
 						normal.z = 0;
 
-						geometria[((i*numPuntosPerfil - 1) + j) - 1].normal = normal;
+						geometria[(j - 1) * slices + i].normal = normal;
 					}
 					else {
 						PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
@@ -195,7 +202,7 @@ void PagRevolutionObject::revolution() {
 						normal.y = (v1.y + vi.y) / 2;
 						normal.z = (v1.z + vi.z) / 2;
 
-						geometria[((i*numPuntosPerfil - 1) + j) - 1].normal = normal;
+						geometria[(j - 1) * slices + i].normal = normal;
 					}
 				}
 			}
@@ -209,7 +216,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = -1;
 				normal.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
+				geometria[tamaGeometriaCoordText - 1].normal = normal;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				NormalesTangentes normal;
@@ -218,7 +225,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = 1;
 				normal.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
+				geometria[tamaGeometriaCoordText - 1].normal = normal;
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
@@ -229,7 +236,7 @@ void PagRevolutionObject::revolution() {
 						normal.y = -1;
 						normal.z = 0;
 
-						geometria[((i*numPuntosPerfil - 1) + j) - 1].normal = normal;
+						geometria[(j - 1) * slices + i].normal = normal;
 					}
 					else if (j == numPuntosPerfil - 2 && flagTopTape) {
 						NormalesTangentes normal;
@@ -238,7 +245,7 @@ void PagRevolutionObject::revolution() {
 						normal.y = 1;
 						normal.z = 0;
 
-						geometria[((i*numPuntosPerfil - 1) + j)].normal = normal;
+						geometria[j * slices + i].normal = normal;
 					}
 					else {
 						PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
@@ -279,8 +286,8 @@ void PagRevolutionObject::revolution() {
 						normal.y = (v1.y + vi.y) / 2;
 						normal.z = (v1.z + vi.z) / 2;
 
-						if(flagBottomTape) geometria[((i*numPuntosPerfil - 1) + j) - 1].normal = normal;
-						else geometria[((i*numPuntosPerfil - 1) + j)].normal = normal;
+						if(flagBottomTape) geometria[(j - 1) * slices + i].normal = normal;
+						else geometria[j * slices + i].normal = normal;
 					}
 				}
 			}
@@ -325,7 +332,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = (v1.y + vi.y) / 2;
 				normal.z = (v1.z + vi.z) / 2;
 
-				geometria[(i*numPuntosPerfil - 1) + j].normal = normal;
+				geometria[j * slices + i].normal = normal;
 			}
 		}
 	}
@@ -341,7 +348,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 2].tangente = tangente;
+				geometria[tamaGeometriaCoordText - 2].tangente = tangente;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				NormalesTangentes tangente;
@@ -350,7 +357,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
 			}
 			else {
 				for (int i = 0; i < slices; i++) {
@@ -360,7 +367,7 @@ void PagRevolutionObject::revolution() {
 					tangente.y = 0;
 					tangente.z = -1 * cos(i * angleRadIncrement);
 
-					geometria[((i*numPuntosPerfil - 1) + j) - 1].tangente = tangente;
+					geometria[(j - 1) * slices + i].tangente = tangente;
 				}
 			}
 		}
@@ -372,7 +379,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				NormalesTangentes tangente;
@@ -381,7 +388,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
 			}else{
 				for (int i = 0; i < slices; i++) {
 					NormalesTangentes tangente;
@@ -390,8 +397,8 @@ void PagRevolutionObject::revolution() {
 					tangente.y = 0;
 					tangente.z = -1 * cos(i * angleRadIncrement);
 
-					if(flagBottomTape) geometria[((i*numPuntosPerfil - 1) + j) - 1].tangente = tangente;
-					else geometria[((i*numPuntosPerfil - 1) + j)].tangente = tangente;
+					if(flagBottomTape) geometria[(j - 1) * slices + i].tangente = tangente;
+					else geometria[j * slices + i].tangente = tangente;
 				}
 			}
 		}
@@ -403,7 +410,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = -1 * cos(i * angleRadIncrement);
 
-				geometria[(i*numPuntosPerfil - 1) + j].tangente = tangente;
+				geometria[j * slices + i].tangente = tangente;
 			}
 		}
 	}

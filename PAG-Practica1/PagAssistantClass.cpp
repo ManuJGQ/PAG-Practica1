@@ -5,7 +5,12 @@
 
 #define Epsilon 0.000001
 
-PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices){
+PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices, std::string _nombreAlumno){
+	int linea;
+	linea = _nombreAlumno.find('-');
+	nombreAlumno = _nombreAlumno.substr(0, linea);
+	std::cout << nombreAlumno << std::endl;
+
 	std::string linea_actual;
 	int numPuntosPerfilOriginal;
 	int numDivisiones;
@@ -59,7 +64,6 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices){
 		PuntosPerfil *perfilTemp = new PuntosPerfil[numPuntosPerfilOriginal];
 		for (int i = 0; i < numPuntosPerfilOriginal; i++) {
 			perfilTemp[i] = perfil[i];
-			std::cout << perfilTemp[i].x << " " << perfilTemp[i].y << std::endl;
 		}
 
 		delete[] perfil;
@@ -73,6 +77,57 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices){
 	catch (std::string &e) {
 		std::cout << "ERROR: " << e << std::endl;
 	}
+
+	devolverDatos();
+}
+
+void PagAssistantClass::devolverDatos() {
+	Geometria *geometria = &revolutionObject.getGeometria();
+	CoordTexturas *coordtext = &revolutionObject.getCoordText();
+	int *indices = &revolutionObject.getIndices();
+	int tamaGeometriaCoordText = revolutionObject.getTamaGeometriaCoordText();
+	int tamaIndices = revolutionObject.getTamaIndices();
+
+	char* docdir = getenv("userprofile");
+	std::string path = docdir;
+	path += "/Desktop/";
+	path += nombreAlumno;
+	std::string nombreFichero;
+
+	//ARCHIVO GEOMETRIA
+
+	nombreFichero = path;
+	nombreFichero += "-out-geom.txt";
+	std::ofstream ficheroGeom;
+	ficheroGeom.open(nombreFichero);
+	ficheroGeom << tamaGeometriaCoordText << std::endl;
+	for (int i = 0; i < tamaGeometriaCoordText; i++) {
+		ficheroGeom << geometria[i].vertice.x << ","
+			<< geometria[i].vertice.y << ","
+			<< geometria[i].vertice.z << ","
+			<< geometria[i].normal.x << ","
+			<< geometria[i].normal.y << ","
+			<< geometria[i].normal.z << ","
+			<< geometria[i].tangente.x << ","
+			<< geometria[i].tangente.y << ","
+			<< geometria[i].tangente.z << " --- "
+			<< i << std::endl;
+	}
+	ficheroGeom.close();
+
+	//ARCHIVO COORDTEXT
+
+	nombreFichero = path;
+	nombreFichero += "-out-text.txt";
+	std::ofstream ficheroText;
+	ficheroText.open(nombreFichero);
+	ficheroText << tamaGeometriaCoordText << std::endl;
+	for (int i = 0; i < tamaGeometriaCoordText; i++) {
+		ficheroText << coordtext[i].s << ","
+			<< coordtext[i].t << " --- "
+			<< i << std::endl;
+	}
+	ficheroText.close();
 }
 
 PagAssistantClass::~PagAssistantClass(){}
