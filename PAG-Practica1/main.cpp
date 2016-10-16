@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <GL/glew.h> //glew SIEMPRE va antes del glfw
 #include <GLFW/glfw3.h>
@@ -8,8 +9,16 @@
 int main(int argc, char** argv) {
 	char* docdir = getenv("userprofile");
 	std::string path = docdir;
-	path += "/Desktop/prueba.txt";
-	PagAssistantClass(std::string(path));
+	std::string archivo;
+	path += "/Desktop/";
+	std::cout << "Escriba el nombre del fichero (con .txt)" << std::endl;
+	std::getline(std::cin, archivo);
+	path += archivo;
+
+	int slices;
+	std::cout << "Escriba el numero de slices" << std::endl;
+	std::cin >> slices;
+	PagAssistantClass(std::string(path), slices);
 	system("pause");
 	return 0;
 }

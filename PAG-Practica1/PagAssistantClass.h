@@ -4,7 +4,7 @@
 class PagAssistantClass{
 	PagRevolutionObject revolutionObject;
 public:
-	PagAssistantClass(std::string archivoIN);
+	PagAssistantClass(std::string archivoIN, int slices);
 	~PagAssistantClass();
 };
 

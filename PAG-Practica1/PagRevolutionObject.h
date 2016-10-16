@@ -15,10 +15,11 @@ class PagRevolutionObject{
 	CoordTexturas *coordtext;
 	int *indices;
 	void revolution();
+	int slices;
 public:
 	PagRevolutionObject();
 	PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones, PuntosPerfil& _perfilOriginal,
-		bool _flagBottomTape, bool _flagTopTape);
+		bool _flagBottomTape, bool _flagTopTape, int _slices);
 	~PagRevolutionObject();
 };
 

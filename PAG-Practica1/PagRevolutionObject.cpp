@@ -7,7 +7,7 @@
 PagRevolutionObject::PagRevolutionObject() {};
 
 PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones,
-	PuntosPerfil& _perfilOriginal, bool _flagBottomTape, bool _flagTopTape){
+	PuntosPerfil& _perfilOriginal, bool _flagBottomTape, bool _flagTopTape, int _slices){
 
 	flagBottomTape = _flagBottomTape;
 	flagTopTape = _flagTopTape;
@@ -15,32 +15,34 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 	subdivisionProfiles = PagSubdivisionProfile(_numPuntosPerfilOriginal, _numDivisiones,
 		_perfilOriginal);
 
+	slices = _slices;
+
 	revolution();
 }
 
 void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
 	if (flagBottomTape && flagTopTape) {
-		geometria = new Geometria[((numPuntosPerfil - 2) * 20) + 2];
-		coordtext = new CoordTexturas[((numPuntosPerfil - 2) * 20) + 2];		//CASO 1: DOS TAPAS
-		indices = new int[(((numPuntosPerfil - 2) * 20) * 2) + 2];
+		geometria = new Geometria[((numPuntosPerfil - 2) * slices) + 2];
+		coordtext = new CoordTexturas[((numPuntosPerfil - 2) * slices) + 2];		//CASO 1: DOS TAPAS
+		indices = new int[(((numPuntosPerfil - 2) * slices) * 2) + 2];
 	}
 	else if (flagBottomTape || flagTopTape) {
-		geometria = new Geometria[((numPuntosPerfil - 1) * 20) + 1];
-		coordtext = new CoordTexturas[((numPuntosPerfil - 1) * 20) + 1];		//CASO 2: UNA TAPA
-		indices = new int[(((numPuntosPerfil - 1) * 20) * 2) + 1];
+		geometria = new Geometria[((numPuntosPerfil - 1) * slices) + 1];
+		coordtext = new CoordTexturas[((numPuntosPerfil - 1) * slices) + 1];		//CASO 2: UNA TAPA
+		indices = new int[(((numPuntosPerfil - 1) * slices) * 2) + 1];
 	}
 	else {
-		geometria = new Geometria[numPuntosPerfil * 20];
-		coordtext = new CoordTexturas[numPuntosPerfil * 20];			//CASO 3: SIN TAPAS
-		indices = new int[numPuntosPerfil * 20 * 2];
+		geometria = new Geometria[numPuntosPerfil * slices];
+		coordtext = new CoordTexturas[numPuntosPerfil * slices];			//CASO 3: SIN TAPAS
+		indices = new int[numPuntosPerfil * slices * 2];
 	}
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
 	// VERTICES
 
-	float angleRadIncrement = (2 * PI) / 20;
+	float angleRadIncrement = (2 * PI) / slices;
 
 	for (int j = 0; j < numPuntosPerfil; j++) {
 		if (flagTopTape && flagBottomTape) {
@@ -49,17 +51,17 @@ void PagRevolutionObject::revolution() {
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(20 * numPuntosPerfil) - 2].vertice = vert;
+				geometria[(slices * numPuntosPerfil) - 2].vertice = vert;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				PuntosVertices vert;
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
 			}
 			else {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					float x = perfil[j].x * cos(angleRadIncrement * i);
 					float z = perfil[j].x * -sin(angleRadIncrement * i);
 					PuntosVertices vert;
@@ -77,17 +79,17 @@ void PagRevolutionObject::revolution() {
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				PuntosVertices vert;
 				vert.x = 0;
 				vert.y = perfil[j].y;
 				vert.z = 0;
-				geometria[(20 * numPuntosPerfil) - 1].vertice = vert;
+				geometria[(slices * numPuntosPerfil) - 1].vertice = vert;
 			}
 			else {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					float x = perfil[j].x * cos(angleRadIncrement * i);
 					float z = perfil[j].x * -sin(angleRadIncrement * i);
 					PuntosVertices vert;
@@ -100,7 +102,7 @@ void PagRevolutionObject::revolution() {
 			}
 		}
 		else {
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				float x = perfil[j].x * cos(angleRadIncrement * i);
 				float z = perfil[j].x * -sin(angleRadIncrement * i);
 				PuntosVertices vert;
@@ -123,7 +125,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = -1;
 				normal.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 2].normal = normal;
+				geometria[(slices * numPuntosPerfil) - 2].normal = normal;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				NormalesTangentes normal;
@@ -132,10 +134,10 @@ void PagRevolutionObject::revolution() {
 				normal.y = 1;
 				normal.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].normal = normal;
+				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
 			}
 			else {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					if (j == 1) {
 						NormalesTangentes normal;
 
@@ -207,7 +209,7 @@ void PagRevolutionObject::revolution() {
 				normal.y = -1;
 				normal.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].normal = normal;
+				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				NormalesTangentes normal;
@@ -216,10 +218,10 @@ void PagRevolutionObject::revolution() {
 				normal.y = 1;
 				normal.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].normal = normal;
+				geometria[(slices * numPuntosPerfil) - 1].normal = normal;
 			}
 			else {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					if (j == 1 && flagBottomTape) {
 						NormalesTangentes normal;
 
@@ -284,7 +286,7 @@ void PagRevolutionObject::revolution() {
 			}
 		}
 		else {
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				PuntosVertices p1 = geometria[(i*numPuntosPerfil - 1) + j - 1].vertice;
 				PuntosVertices pi = geometria[(i*numPuntosPerfil - 1) + j].vertice;
 				PuntosVertices p2 = geometria[(i*numPuntosPerfil - 1) + j + 1].vertice;
@@ -339,7 +341,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 2].tangente = tangente;
+				geometria[(slices * numPuntosPerfil) - 2].tangente = tangente;
 			}
 			else if (j == numPuntosPerfil - 1) {
 				NormalesTangentes tangente;
@@ -348,10 +350,10 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
 			}
 			else {
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					NormalesTangentes tangente;
 
 					tangente.x = -1 * sin(i * angleRadIncrement);
@@ -370,7 +372,7 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
 			}
 			else if (j == numPuntosPerfil - 1 && flagTopTape) {
 				NormalesTangentes tangente;
@@ -379,9 +381,9 @@ void PagRevolutionObject::revolution() {
 				tangente.y = 0;
 				tangente.z = 0;
 
-				geometria[(20 * numPuntosPerfil) - 1].tangente = tangente;
+				geometria[(slices * numPuntosPerfil) - 1].tangente = tangente;
 			}else{
-				for (int i = 0; i < 20; i++) {
+				for (int i = 0; i < slices; i++) {
 					NormalesTangentes tangente;
 
 					tangente.x = -1 * sin(i * angleRadIncrement);
@@ -394,7 +396,7 @@ void PagRevolutionObject::revolution() {
 			}
 		}
 		else {
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				NormalesTangentes tangente;
 
 				tangente.x = -1 * sin(i * angleRadIncrement);
@@ -409,7 +411,7 @@ void PagRevolutionObject::revolution() {
 	// COORDENADAS TEXTURAS
 
 	if (flagTopTape && flagBottomTape) {
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < slices; i++) {
 			float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 			float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
 			coordtext[(i * numPuntosPerfil - 1)].s = s;
@@ -417,16 +419,16 @@ void PagRevolutionObject::revolution() {
 			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
 			coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
 		}
-		coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
-		coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
-		coordtext[(numPuntosPerfil * 18)].s = 0.5;
-		coordtext[(numPuntosPerfil * 18)].t = 0.5;
+		coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
+		coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
+		coordtext[(numPuntosPerfil * slices - 2)].s = 0.5;
+		coordtext[(numPuntosPerfil * slices - 2)].t = 0.5;
 
 		float *modulo = new float[numPuntosPerfil - 4];
 
-		for (int j = 0; j < 20; j++) {
+		for (int j = 0; j < slices; j++) {
 
-			float s = j * (1 / 20);
+			float s = j * (1 / slices);
 
 			float sumatorio = 0;
 
@@ -446,14 +448,10 @@ void PagRevolutionObject::revolution() {
 
 				sumatorio += modV1;
 
-				//std::cout << numPuntosPerfil - 4 << " - " << i - 2 << " - " << modulo[i - 2] << std::endl;
-
 				modulo[i - 2] = sumatorio;
 			}
 
 			for (int i = 2; i < numPuntosPerfil - 2; i++) {
-
-				std::cout << numPuntosPerfil - 4 << " - " << i - 2 << " - " << modulo[i - 2] << std::endl;
 
 				float t = (modulo[i - 2]) / (sumatorio);
 
@@ -462,26 +460,23 @@ void PagRevolutionObject::revolution() {
 			}
 		}
 
-		/*std::cout << "BORRO" << std::endl;
-
-		delete[] modulo;*/
 	}
 	else if (flagTopTape || flagBottomTape) {
 		if (flagTopTape) {
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].s = s;
 				coordtext[(i * numPuntosPerfil - 1) + numPuntosPerfil - 2].t = t;
 			}
-			coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
-			coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
+			coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
+			coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
 
 			float *modulo = new float[numPuntosPerfil - 2];
 			
-			for (int j = 0; j < 20; j++) {
+			for (int j = 0; j < slices; j++) {
 
-				float s = j * (1 / 20);
+				float s = j * (1 / slices);
 
 				float sumatorio = 0;
 
@@ -512,24 +507,23 @@ void PagRevolutionObject::revolution() {
 					coordtext[(j*numPuntosPerfil - 1) + i - 1].t = t;
 				}
 
-				//delete[] modulo;
 			}
 		}
 		else {
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
 				coordtext[(i * numPuntosPerfil - 1)].s = s;
 				coordtext[(i * numPuntosPerfil - 1)].t = t;
 			}
-			coordtext[(numPuntosPerfil * 18) + 1].s = 0.5;
-			coordtext[(numPuntosPerfil * 18) + 1].t = 0.5;
+			coordtext[(numPuntosPerfil * slices - 2) + 1].s = 0.5;
+			coordtext[(numPuntosPerfil * slices - 2) + 1].t = 0.5;
 
 			float *modulo = new float[numPuntosPerfil - 2];
 
-			for (int j = 0; j < 20; j++) {
+			for (int j = 0; j < slices; j++) {
 
-				float s = j * (1 / 20);
+				float s = j * (1 / slices);
 
 				float sumatorio = 0;
 
@@ -560,16 +554,15 @@ void PagRevolutionObject::revolution() {
 					coordtext[(j*numPuntosPerfil - 1) + i].t = t;
 				}
 
-				//delete[] modulo;
 			}
 		}
 	}
 	else {
 		float *modulo = new float[numPuntosPerfil];
 
-		for (int j = 0; j < 20; j++) {
+		for (int j = 0; j < slices; j++) {
 
-			float s = j * (1 / 20);
+			float s = j * (1 / slices);
 
 			float sumatorio = 0;
 
@@ -600,7 +593,6 @@ void PagRevolutionObject::revolution() {
 				coordtext[(j*numPuntosPerfil - 1) + i].t = t;
 			}
 
-			//delete[] modulo;
 		}
 	}
 
@@ -608,63 +600,63 @@ void PagRevolutionObject::revolution() {
 
 	if (flagBottomTape && flagTopTape) {
 		int k = 1;
-		indices[0] = 20;
-		for (int i = 0; i < 20; i++) {
+		indices[0] = slices;
+		for (int i = 0; i < slices; i++) {
 			indices[k] = i;
 			k ++;
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < slices; i++) {
 			for (int j = 2; j < numPuntosPerfil - 2; j++) {
 				indices[k] = i + (j * 21);
-				indices[k + 1] = (i + 1) + (j * 21);
+				indices[k + 1] = (i + 1) + (j * slices + 1);
 				k += 2;
 			}
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < slices; i++) {
 			indices[k] = i;
 			k++;
 		}
-		indices[k] = 20;
+		indices[k] = slices;
 
 	}
 	else if (flagBottomTape || flagTopTape) {
 		if (flagBottomTape) {
 			int k = 1;
-			indices[0] = 20;
-			for (int i = 0; i < 20; i++) {
+			indices[0] = slices;
+			for (int i = 0; i < slices; i++) {
 				indices[k] = i;
 				k++;
 			}
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				for (int j = 2; j < numPuntosPerfil; j++) {
-					indices[k] = i + (j * 21);
-					indices[k + 1] = (i + 1) + (j * 21);
+					indices[k] = i + (j * slices + 1);
+					indices[k + 1] = (i + 1) + (j * slices +1);
 					k += 2;
 				}
 			}
 		}
 		else {
 			int k = 0;
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				for (int j = 0; j < numPuntosPerfil - 2; j++) {
-					indices[k] = i + (j * 21);
-					indices[k + 1] = (i + 1) + (j * 21);
+					indices[k] = i + (j * slices + 1);
+					indices[k + 1] = (i + 1) + (j * slices + 1);
 					k += 2;
 				}
 			}
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i < slices; i++) {
 				indices[k] = i;
 				k++;
 			}
-			indices[k] = 20;
+			indices[k] = slices;
 		}
 	}
 	else {
 		int k = 0;
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < slices; i++) {
 			for (int j = 0; j < numPuntosPerfil; j++) {
-				indices[k] = i + (j * 21);
-				indices[k + 1] = (i + 1) + (j * 21);
+				indices[k] = i + (j * slices + 1);
+				indices[k + 1] = (i + 1) + (j * slices + 1);
 				k += 2;
 			}
 		}
