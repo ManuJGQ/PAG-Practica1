@@ -110,8 +110,7 @@ void PagAssistantClass::devolverDatos() {
 			<< geometria[i].normal.z << ","
 			<< geometria[i].tangente.x << ","
 			<< geometria[i].tangente.y << ","
-			<< geometria[i].tangente.z << " --- "
-			<< i << std::endl;
+			<< geometria[i].tangente.z << std::endl;
 	}
 	ficheroGeom.close();
 
@@ -124,10 +123,21 @@ void PagAssistantClass::devolverDatos() {
 	ficheroText << tamaGeometriaCoordText << std::endl;
 	for (int i = 0; i < tamaGeometriaCoordText; i++) {
 		ficheroText << coordtext[i].s << ","
-			<< coordtext[i].t << " --- "
-			<< i << std::endl;
+			<< coordtext[i].t << std::endl;
 	}
 	ficheroText.close();
+
+	//ARCHIVO INDICES
+
+	nombreFichero = path;
+	nombreFichero += "-out-ind.txt";
+	std::ofstream ficheroInd;
+	ficheroInd.open(nombreFichero);
+	ficheroInd << tamaIndices << std::endl;
+	for (int i = 0; i < tamaIndices; i++) {
+		ficheroInd << indices[i] << std::endl;
+	}
+	ficheroInd.close();
 }
 
 PagAssistantClass::~PagAssistantClass(){}
