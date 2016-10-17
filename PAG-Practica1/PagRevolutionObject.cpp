@@ -24,14 +24,14 @@ void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
 	if (flagBottomTape && flagTopTape) {
 		tamaGeometriaCoordText = ((numPuntosPerfil - 2) * slices) + 2;
-		tamaIndices = (((numPuntosPerfil - 2) * slices) * 2) + 2;
+		tamaIndices = (((numPuntosPerfil - 4) * 2) * slices) + slices + 2;
 		geometria = new Geometria[tamaGeometriaCoordText];
 		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 1: DOS TAPAS
 		indices = new int[tamaIndices];
 	}
 	else if (flagBottomTape || flagTopTape) {
 		tamaGeometriaCoordText = ((numPuntosPerfil - 1) * slices) + 1;
-		tamaIndices = (((numPuntosPerfil - 1) * slices) * 2) + 1;
+		tamaIndices = (((numPuntosPerfil - 2) * 2) * slices);
 		geometria = new Geometria[tamaGeometriaCoordText];
 		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 2: UNA TAPA
 		indices = new int[tamaIndices];
@@ -618,23 +618,25 @@ void PagRevolutionObject::revolution() {
 
 	if (flagBottomTape && flagTopTape) {
 		int k = 1;
-		indices[0] = slices;
+		indices[0] = tamaGeometriaCoordText-2;
 		for (int i = 0; i < slices; i++) {
 			indices[k] = i;
 			k ++;
 		}
 		for (int i = 0; i < slices; i++) {
-			for (int j = 2; j < numPuntosPerfil - 2; j++) {
-				indices[k] = i + (j * 21);
-				indices[k + 1] = (i + 1) + (j * slices + 1);
+			for (int j = 2; j < numPuntosPerfil - 3; j++) {
+				indices[k] = i + (j * (slices + 1));
+				indices[k + 1] = (i + 1) + (j * (slices + 1));
 				k += 2;
 			}
-		}
-		for (int i = 0; i < slices; i++) {
-			indices[k] = i;
+			indices[k] = 0xFFFF;
 			k++;
 		}
-		indices[k] = slices;
+		for (int i = 0; i < slices; i++) {
+			indices[k] = (numPuntosPerfil - 3) * slices + i;
+			k++;
+		}
+		indices[k] = tamaGeometriaCoordText - 1;
 
 	}
 	else if (flagBottomTape || flagTopTape) {
@@ -647,20 +649,24 @@ void PagRevolutionObject::revolution() {
 			}
 			for (int i = 0; i < slices; i++) {
 				for (int j = 2; j < numPuntosPerfil; j++) {
-					indices[k] = i + (j * slices + 1);
-					indices[k + 1] = (i + 1) + (j * slices +1);
+					indices[k] = i + (j * (slices + 1));
+					indices[k + 1] = (i + 1) + (j * (slices + 1));
 					k += 2;
 				}
+				indices[k] = 0xFFFF;
+				k++;
 			}
 		}
 		else {
 			int k = 0;
 			for (int i = 0; i < slices; i++) {
 				for (int j = 0; j < numPuntosPerfil - 2; j++) {
-					indices[k] = i + (j * slices + 1);
-					indices[k + 1] = (i + 1) + (j * slices + 1);
+					indices[k] = i + (j * (slices + 1));
+					indices[k + 1] = (i + 1) + (j * (slices + 1));
 					k += 2;
 				}
+				indices[k] = 0xFFFF;
+				k++;
 			}
 			for (int i = 0; i < slices; i++) {
 				indices[k] = i;
@@ -673,10 +679,12 @@ void PagRevolutionObject::revolution() {
 		int k = 0;
 		for (int i = 0; i < slices; i++) {
 			for (int j = 0; j < numPuntosPerfil; j++) {
-				indices[k] = i + (j * slices + 1);
-				indices[k + 1] = (i + 1) + (j * slices + 1);
+				indices[k] = i + (j * (slices + 1));
+				indices[k + 1] = (i + 1) + (j * (slices + 1));
 				k += 2;
 			}
+			indices[k] = 0xFFFF;
+			k++;
 		}
 	}
 }
