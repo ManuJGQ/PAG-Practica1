@@ -31,7 +31,7 @@ void PagRevolutionObject::revolution() {
 	}
 	else if (flagBottomTape || flagTopTape) {
 		tamaGeometriaCoordText = ((numPuntosPerfil - 1) * slices) + 1;
-		tamaIndices = (((numPuntosPerfil - 2) * 2) * slices);
+		tamaIndices = (((numPuntosPerfil - 2) * 2) * slices) + slices + 1;
 		geometria = new Geometria[tamaGeometriaCoordText];
 		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 2: UNA TAPA
 		indices = new int[tamaIndices];
@@ -647,8 +647,8 @@ void PagRevolutionObject::revolution() {
 				indices[k] = i;
 				k++;
 			}
-			for (int i = 0; i < slices; i++) {
-				for (int j = 2; j < numPuntosPerfil; j++) {
+			for (int j = 2; j < numPuntosPerfil; j++) {
+				for (int i = 0; i < slices; i++) {
 					indices[k] = i + (j * (slices + 1));
 					indices[k + 1] = (i + 1) + (j * (slices + 1));
 					k += 2;

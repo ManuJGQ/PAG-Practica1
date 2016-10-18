@@ -8,11 +8,13 @@ PagSubdivisionProfile::PagSubdivisionProfile(int _numPuntosPerfilOriginal, int _
 
 	perfilOriginal = &_perfilOriginal;
 
-	subdivisionPolilineas();
+	perfilSubdividido = perfilOriginal;
+	numPuntosPerfilSubdividido = numPuntosPerfilOriginal;
+
+	if(numPuntosPerfilOriginal > 2 && numDivisiones > 0) subdivisionPolilineas();
 }
 
 void PagSubdivisionProfile::subdivisionPolilineas() {
-	perfilSubdividido = perfilOriginal;
 	int numPuntos = numPuntosPerfilOriginal;
 	int expectedNumberOfPoints = (2 * numPuntos) - 1;
 	PuntosPerfil* perfiltemporal;
