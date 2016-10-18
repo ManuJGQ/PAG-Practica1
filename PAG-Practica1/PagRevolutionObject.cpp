@@ -7,7 +7,7 @@
 PagRevolutionObject::PagRevolutionObject() {};
 
 PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numDivisiones,
-	PuntosPerfil& _perfilOriginal, bool _flagBottomTape, bool _flagTopTape, int _slices){
+	PuntosPerfil& _perfilOriginal, bool _flagBottomTape, bool _flagTopTape, int _slices) {
 
 	flagBottomTape = _flagBottomTape;
 	flagTopTape = _flagTopTape;
@@ -22,595 +22,234 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 
 void PagRevolutionObject::revolution() {
 	int numPuntosPerfil = subdivisionProfiles.getNumPuntosPerfil();
-	if (flagBottomTape && flagTopTape) {
-		tamaGeometriaCoordText = ((numPuntosPerfil - 2) * slices) + 2;
-		tamaIndices = (((numPuntosPerfil - 4) * 2) * slices) + slices + 2;
-		geometria = new Geometria[tamaGeometriaCoordText];
-		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 1: DOS TAPAS
-		indices = new int[tamaIndices];
+
+	int numTapas = 0;
+	int cambioIndice = 0;
+	if (flagBottomTape) {
+		numTapas++;
+		cambioIndice++;
 	}
-	else if (flagBottomTape || flagTopTape) {
-		tamaGeometriaCoordText = ((numPuntosPerfil - 1) * slices) + 1;
-		tamaIndices = (((numPuntosPerfil - 2) * 2) * slices) + slices + 1;
-		geometria = new Geometria[tamaGeometriaCoordText];
-		coordtext = new CoordTexturas[tamaGeometriaCoordText];		//CASO 2: UNA TAPA
-		indices = new int[tamaIndices];
-	}
-	else {
-		tamaGeometriaCoordText = numPuntosPerfil * slices;
-		tamaIndices = numPuntosPerfil * slices * 2;
-		geometria = new Geometria[tamaGeometriaCoordText];
-		coordtext = new CoordTexturas[tamaGeometriaCoordText];			//CASO 3: SIN TAPAS
-		indices = new int[tamaIndices];
-	}
+	if (flagTopTape) numTapas++;
+
+	tamaGeometriaCoordText = ((numPuntosPerfil - numTapas) * slices) + numTapas;
+	tamaIndices = (((numPuntosPerfil - (numTapas * 2)) * 2) + 1) * slices;
+	geometria = new Geometria[tamaGeometriaCoordText];
+	coordtext = new CoordTexturas[tamaGeometriaCoordText];
+	indices = new int[tamaIndices];
 
 	PuntosPerfil *perfil = &subdivisionProfiles.getPerfil();
 
-	// VERTICES
-
 	float angleRadIncrement = (2 * PI) / slices;
 
+	// VERTICES
+
 	for (int j = 0; j < numPuntosPerfil; j++) {
-		if (flagTopTape && flagBottomTape) {
-			if (j == 0) {
-				PuntosVertices vert;
-				vert.x = 0;
-				vert.y = perfil[j].y;
-				vert.z = 0;
-				geometria[tamaGeometriaCoordText - 2].vertice = vert;
-				std::cout << numPuntosPerfil << std::endl;
-			}
-			else if (j == numPuntosPerfil - 1) {
-				PuntosVertices vert;
-				vert.x = 0;
-				vert.y = perfil[j].y;
-				vert.z = 0;
-				geometria[tamaGeometriaCoordText - 1].vertice = vert;
-			}
-			else {
-				for (int i = 0; i < slices; i++) {
-					float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
-					float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
-
-					PuntosVertices vert;
-					vert.x = x;
-					vert.y = perfil[j].y;
-					vert.z = z;
-					geometria[(j-1) * slices + i].vertice = vert;
-				}
-			}
-
+		if (j == 0 && flagBottomTape) {
+			PuntosVertices vert;
+			vert.x = 0;
+			vert.y = perfil[j].y;
+			vert.z = 0;
+			geometria[tamaGeometriaCoordText - numTapas].vertice = vert;
+			std::cout << numPuntosPerfil << std::endl;
 		}
-		else if(flagTopTape || flagBottomTape) {
-			if (j == 0 && flagBottomTape) {
-				PuntosVertices vert;
-				vert.x = 0;
-				vert.y = perfil[j].y;
-				vert.z = 0;
-				geometria[tamaGeometriaCoordText - 1].vertice = vert;
-			}
-			else if (j == numPuntosPerfil - 1 && flagTopTape) {
-				PuntosVertices vert;
-				vert.x = 0;
-				vert.y = perfil[j].y;
-				vert.z = 0;
-				geometria[tamaGeometriaCoordText - 1].vertice = vert;
-			}
-			else {
-				for (int i = 0; i < slices; i++) {
-					float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
-					float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
-					PuntosVertices vert;
-					vert.x = x;
-					vert.y = perfil[j].y;
-					vert.z = z;
-					if(flagBottomTape) geometria[(j - 1) * slices + i].vertice = vert;
-					else geometria[j * slices + i].vertice = vert;
-				}
-			}
+		else if (j == numPuntosPerfil - 1 && flagTopTape) {
+			PuntosVertices vert;
+			vert.x = 0;
+			vert.y = perfil[j].y;
+			vert.z = 0;
+			geometria[tamaGeometriaCoordText - 1].vertice = vert;
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
-				float x = perfil[j].x * cos((angleRadIncrement * i) * PI / 180);
-				float z = perfil[j].x * -sin((angleRadIncrement * i) * PI / 180);
+				float x = perfil[j].x * cos(angleRadIncrement * i);
+				float z = perfil[j].x * -sin(angleRadIncrement * i);
+
 				PuntosVertices vert;
 				vert.x = x;
 				vert.y = perfil[j].y;
 				vert.z = z;
-				geometria[j * slices + i].vertice = vert;
+				geometria[(j - cambioIndice) * slices + i].vertice = vert;
 			}
 		}
+
 	}
+
 
 	// NORMALES
 
 	for (int j = 0; j < numPuntosPerfil; j++) {
-		if (flagTopTape && flagBottomTape) {
-			if (j == 0) {
-				NormalesTangentes normal;
+		if (j == 0 && flagBottomTape) {
+			NormalesTangentes normal;
 
-				normal.x = 0;
-				normal.y = -1;
-				normal.z = 0;
+			normal.x = 0;
+			normal.y = -1;
+			normal.z = 0;
 
-				geometria[tamaGeometriaCoordText - 2].normal = normal;
-			}
-			else if (j == numPuntosPerfil - 1) {
-				NormalesTangentes normal;
-
-				normal.x = 0;
-				normal.y = 1;
-				normal.z = 0;
-
-				geometria[tamaGeometriaCoordText - 1].normal = normal;
-			}
-			else {
-				for (int i = 0; i < slices; i++) {
-					if (j == 1) {
-						NormalesTangentes normal;
-
-						normal.x = 0;
-						normal.y = -1;
-						normal.z = 0;
-
-						geometria[(j - 1) * slices + i].normal = normal;
-					}
-					else if (j == numPuntosPerfil - 2) {
-						NormalesTangentes normal;
-
-						normal.x = 0;
-						normal.y = 1;
-						normal.z = 0;
-
-						geometria[(j - 1) * slices + i].normal = normal;
-					}
-					else {
-						PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
-						PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
-						PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
-
-						PuntosVertices v1;
-						v1.x = pi.x - p1.x;
-						v1.y = pi.y - p1.y;
-						v1.z = pi.z - p1.z;
-
-						float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-						v1.x = v1.x / modV1;
-						v1.y = v1.y / modV1;
-						v1.z = v1.z / modV1;
-
-						float xTemp = v1.x;
-						v1.x = v1.y;
-						v1.y = xTemp * -1;
-
-						PuntosVertices vi;
-						vi.x = p2.x - pi.x;
-						vi.y = p2.y - pi.y;
-						vi.z = p2.z - pi.z;
-
-						float modVi = sqrt((vi.x * vi.x) + (vi.y * vi.y) + (vi.z * vi.z));
-						vi.x = vi.x / modVi;
-						vi.y = vi.y / modVi;
-						vi.z = vi.z / modVi;
-
-						xTemp = vi.x;
-						vi.x = vi.y;
-						vi.y = xTemp * -1;
-
-						NormalesTangentes normal;
-
-						normal.x = (v1.x + vi.x) / 2;
-						normal.y = (v1.y + vi.y) / 2;
-						normal.z = (v1.z + vi.z) / 2;
-
-						geometria[(j - 1) * slices + i].normal = normal;
-					}
-				}
-			}
-
+			geometria[tamaGeometriaCoordText - numTapas].normal = normal;
 		}
-		else if (flagTopTape || flagBottomTape) {
-			if (j == 0 && flagBottomTape) {
-				NormalesTangentes normal;
+		else if (j == numPuntosPerfil - 1 && flagTopTape) {
+			NormalesTangentes normal;
 
-				normal.x = 0;
-				normal.y = -1;
-				normal.z = 0;
+			normal.x = 0;
+			normal.y = 1;
+			normal.z = 0;
 
-				geometria[tamaGeometriaCoordText - 1].normal = normal;
-			}
-			else if (j == numPuntosPerfil - 1 && flagTopTape) {
-				NormalesTangentes normal;
-
-				normal.x = 0;
-				normal.y = 1;
-				normal.z = 0;
-
-				geometria[tamaGeometriaCoordText - 1].normal = normal;
-			}
-			else {
-				for (int i = 0; i < slices; i++) {
-					if (j == 1 && flagBottomTape) {
-						NormalesTangentes normal;
-
-						normal.x = 0;
-						normal.y = -1;
-						normal.z = 0;
-
-						geometria[(j - 1) * slices + i].normal = normal;
-					}
-					else if (j == numPuntosPerfil - 2 && flagTopTape) {
-						NormalesTangentes normal;
-
-						normal.x = 0;
-						normal.y = 1;
-						normal.z = 0;
-
-						geometria[j * slices + i].normal = normal;
-					}
-					else {
-						PuntosVertices p1;
-						PuntosVertices pi;
-						PuntosVertices p2;
-						if (flagBottomTape) {
-							p1 = geometria[(j - 1) * slices + i - 1].vertice;
-							pi = geometria[(j - 1) * slices + i].vertice;
-							p2 = geometria[(j - 1) * slices + i + 1].vertice;
-						}
-						else {
-							p1 = geometria[j * slices + i - 1].vertice;
-							pi = geometria[j * slices + i].vertice;
-							p2 = geometria[j * slices + i + 1].vertice;
-						}
-
-						PuntosVertices v1;
-						v1.x = pi.x - p1.x;
-						v1.y = pi.y - p1.y;
-						v1.z = pi.z - p1.z;
-
-						float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-						v1.x = v1.x / modV1;
-						v1.y = v1.y / modV1;
-						v1.z = v1.z / modV1;
-
-						float xTemp = v1.x;
-						v1.x = v1.y;
-						v1.y = xTemp * -1;
-
-						PuntosVertices vi;
-						vi.x = p2.x - pi.x;
-						vi.y = p2.y - pi.y;
-						vi.z = p2.z - pi.z;
-
-						float modVi = sqrt((vi.x * vi.x) + (vi.y * vi.y) + (vi.z * vi.z));
-						vi.x = vi.x / modVi;
-						vi.y = vi.y / modVi;
-						vi.z = vi.z / modVi;
-
-						xTemp = vi.x;
-						vi.x = vi.y;
-						vi.y = xTemp * -1;
-
-						NormalesTangentes normal;
-
-						normal.x = (v1.x + vi.x) / 2;
-						normal.y = (v1.y + vi.y) / 2;
-						normal.z = (v1.z + vi.z) / 2;
-
-						if(flagBottomTape) geometria[(j - 1) * slices + i].normal = normal;
-						else geometria[j * slices + i].normal = normal;
-					}
-				}
-			}
+			geometria[tamaGeometriaCoordText - 1].normal = normal;
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
-				PuntosVertices p1 = geometria[j * slices + i - 1].vertice;
-				PuntosVertices pi = geometria[j * slices + i].vertice;
-				PuntosVertices p2 = geometria[j * slices + i + 1].vertice;
+				if (j == 1 && flagBottomTape) {
+					NormalesTangentes normal;
 
-				PuntosVertices v1;
-				v1.x = pi.x - p1.x;
-				v1.y = pi.y - p1.y;
-				v1.z = pi.z - p1.z;
+					normal.x = 0;
+					normal.y = -1;
+					normal.z = 0;
 
-				float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-				v1.x = v1.x / modV1;
-				v1.y = v1.y / modV1;
-				v1.z = v1.z / modV1;
+					geometria[(j - cambioIndice) * slices + i].normal = normal;
+				}
+				else if (j == numPuntosPerfil - 2 && flagTopTape) {
+					NormalesTangentes normal;
 
-				float xTemp = v1.x;
-				v1.x = v1.y;
-				v1.y = xTemp * -1;
+					normal.x = 0;
+					normal.y = 1;
+					normal.z = 0;
 
-				PuntosVertices vi;
-				vi.x = p2.x - pi.x;
-				vi.y = p2.y - pi.y;
-				vi.z = p2.z - pi.z;
+					geometria[(j - cambioIndice) * slices + i].normal = normal;
+				}
+				else {
+					PuntosVertices p1 = geometria[(j - 1) * slices + i - 1].vertice;
+					PuntosVertices pi = geometria[(j - 1) * slices + i].vertice;
+					PuntosVertices p2 = geometria[(j - 1) * slices + i + 1].vertice;
 
-				float modVi = sqrt((vi.x * vi.x) + (vi.y * vi.y) + (vi.z * vi.z));
-				vi.x = vi.x / modVi;
-				vi.y = vi.y / modVi;
-				vi.z = vi.z / modVi;
+					PuntosVertices v1;
+					v1.x = pi.x - p1.x;
+					v1.y = pi.y - p1.y;
+					v1.z = pi.z - p1.z;
 
-				xTemp = vi.x;
-				vi.x = vi.y;
-				vi.y = xTemp * -1;
+					float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+					v1.x = v1.x / modV1;
+					v1.y = v1.y / modV1;
+					v1.z = v1.z / modV1;
 
-				NormalesTangentes normal;
+					float xTemp = v1.x;
+					v1.x = v1.y;
+					v1.y = xTemp * -1;
 
-				normal.x = (v1.x + vi.x) / 2;
-				normal.y = (v1.y + vi.y) / 2;
-				normal.z = (v1.z + vi.z) / 2;
+					PuntosVertices vi;
+					vi.x = p2.x - pi.x;
+					vi.y = p2.y - pi.y;
+					vi.z = p2.z - pi.z;
 
-				geometria[j * slices + i].normal = normal;
+					float modVi = sqrt((vi.x * vi.x) + (vi.y * vi.y) + (vi.z * vi.z));
+					vi.x = vi.x / modVi;
+					vi.y = vi.y / modVi;
+					vi.z = vi.z / modVi;
+
+					xTemp = vi.x;
+					vi.x = vi.y;
+					vi.y = xTemp * -1;
+
+					NormalesTangentes normal;
+
+					normal.x = (v1.x + vi.x) / 2;
+					normal.y = (v1.y + vi.y) / 2;
+					normal.z = (v1.z + vi.z) / 2;
+
+					geometria[(j - cambioIndice) * slices + i].normal = normal;
+				}
 			}
 		}
+
 	}
 
 	// TANGENTES
 
 	for (int j = 0; j < numPuntosPerfil; j++) {
-		if (flagTopTape && flagBottomTape) {
-			if (j == 0) {
-				NormalesTangentes tangente;
+		if (j == 0 && flagBottomTape) {
+			NormalesTangentes tangente;
 
-				tangente.x = 1;
-				tangente.y = 0;
-				tangente.z = 0;
+			tangente.x = 1;
+			tangente.y = 0;
+			tangente.z = 0;
 
-				geometria[tamaGeometriaCoordText - 2].tangente = tangente;
-			}
-			else if (j == numPuntosPerfil - 1) {
-				NormalesTangentes tangente;
-
-				tangente.x = 1;
-				tangente.y = 0;
-				tangente.z = 0;
-
-				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
-			}
-			else {
-				for (int i = 0; i < slices; i++) {
-					NormalesTangentes tangente;
-
-					tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
-					tangente.y = 0;
-					tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
-
-					geometria[(j - 1) * slices + i].tangente = tangente;
-				}
-			}
+			geometria[tamaGeometriaCoordText - numTapas].tangente = tangente;
 		}
-		else if (flagTopTape || flagBottomTape) {
-			if (j == 0 && flagBottomTape) {
-				NormalesTangentes tangente;
+		else if (j == numPuntosPerfil - 1 && flagTopTape) {
+			NormalesTangentes tangente;
 
-				tangente.x = 1;
-				tangente.y = 0;
-				tangente.z = 0;
+			tangente.x = 1;
+			tangente.y = 0;
+			tangente.z = 0;
 
-				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
-			}
-			else if (j == numPuntosPerfil - 1 && flagTopTape) {
-				NormalesTangentes tangente;
-
-				tangente.x = 1;
-				tangente.y = 0;
-				tangente.z = 0;
-
-				geometria[tamaGeometriaCoordText - 1].tangente = tangente;
-			}else{
-				for (int i = 0; i < slices; i++) {
-					NormalesTangentes tangente;
-
-					tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
-					tangente.y = 0;
-					tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
-
-					if(flagBottomTape) geometria[(j - 1) * slices + i].tangente = tangente;
-					else geometria[j * slices + i].tangente = tangente;
-				}
-			}
+			geometria[tamaGeometriaCoordText - 1].tangente = tangente;
 		}
 		else {
 			for (int i = 0; i < slices; i++) {
 				NormalesTangentes tangente;
 
-				tangente.x = -1 * sin((angleRadIncrement * i) * PI / 180);
+				tangente.x = -1 * sin(angleRadIncrement * i);
 				tangente.y = 0;
-				tangente.z = -1 * cos((angleRadIncrement * i) * PI / 180);
+				tangente.z = -1 * cos(angleRadIncrement * i);
 
-				geometria[j * slices + i].tangente = tangente;
+				geometria[(j - cambioIndice) * slices + i].tangente = tangente;
 			}
 		}
 	}
 
 	// COORDENADAS TEXTURAS
 
-	if (flagTopTape && flagBottomTape) {
-		for (int i = 0; i < slices; i++) {
-			float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
-			float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-			coordtext[i].s = s;
-			coordtext[i].t = t;
-			coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
-			coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
-		}
-		coordtext[tamaGeometriaCoordText - 2].s = 0.5;
-		coordtext[tamaGeometriaCoordText - 2].t = 0.5;
-		coordtext[tamaGeometriaCoordText - 1].s = 0.5;
-		coordtext[tamaGeometriaCoordText - 1].t = 0.5;
-
-		float *modulo = new float[numPuntosPerfil - 4];
-
-		for (int j = 0; j < slices; j++) {
-
-			float s = j * float(float(1) / float(slices));
-
-			float sumatorio = 0;
-
-			modulo[0] = sumatorio;
-
-			for (int i = 2; i < numPuntosPerfil - 2; i++) {
-
-				PuntosVertices p1 = geometria[(i - 1) * slices + j].vertice;
-				PuntosVertices p2 = geometria[(i - 1) * slices + j - 1].vertice;
-
-				PuntosVertices v1;
-				v1.x = p1.x - p2.x;
-				v1.y = p1.y - p2.y;
-				v1.z = p1.z - p2.z;
-
-				float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-
-				sumatorio += modV1;
-
-				modulo[i - 2] = sumatorio;
-			}
-
-			for (int i = 2; i < numPuntosPerfil - 2; i++) {
-
-				float t = (modulo[i - 2]) / (sumatorio);
-
-				coordtext[(i - 1) * slices + j].s = s;
-				coordtext[(i - 1) * slices + j].t = t;
-			}
-		}
-
+	for (int i = 0; i < slices; i++) {
+		float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
+		float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
+		coordtext[i].s = s;
+		coordtext[i].t = t;
+		coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
+		coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
 	}
-	else if (flagTopTape || flagBottomTape) {
-		if (flagTopTape) {
-			for (int i = 0; i < slices; i++) {
-				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
-				coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
-			}
-			coordtext[tamaGeometriaCoordText - 1].s = 0.5;
-			coordtext[tamaGeometriaCoordText - 1].t = 0.5;
+	coordtext[tamaGeometriaCoordText - 2].s = 0.5;
+	coordtext[tamaGeometriaCoordText - 2].t = 0.5;
+	coordtext[tamaGeometriaCoordText - 1].s = 0.5;
+	coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
-			float *modulo = new float[numPuntosPerfil - 2];
-			
-			for (int j = 0; j < slices; j++) {
+	float *modulo = new float[numPuntosPerfil - 4];
 
-				float s = j * float(float(1) / float(slices));
+	for (int j = 0; j < slices; j++) {
 
-				float sumatorio = 0;
+		float s = j * float(float(1) / float(slices - 1));
 
-				modulo[0] = sumatorio;
+		float sumatorio = 0;
 
-				for (int i = 1; i < numPuntosPerfil - 2; i++) {
+		modulo[0] = sumatorio;
 
-					PuntosVertices p1 = geometria[i * slices + j].vertice;
-					PuntosVertices p2 = geometria[i * slices + j - 1].vertice;
+		for (int i = 3; i < numPuntosPerfil - 2; i++) {
 
-					PuntosVertices v1;
-					v1.x = p1.x - p2.x;
-					v1.y = p1.y - p2.y;
-					v1.z = p1.z - p2.z;
+			PuntosVertices p1 = geometria[(i - cambioIndice) * slices + j].vertice;
+			PuntosVertices p2 = geometria[(i - cambioIndice - 1) * slices + j].vertice;
 
-					float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
+			PuntosVertices v1;
+			v1.x = p1.x - p2.x;
+			v1.y = p1.y - p2.y;
+			v1.z = p1.z - p2.z;
 
-					sumatorio += modV1;
+			if(j==0) std::cout << (i - cambioIndice) * slices + j - 1 << std::endl;
 
-					modulo[i] = sumatorio;
-				}
+			float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
 
-				for (int i = 0; i < numPuntosPerfil - 2; i++) {
+			sumatorio += modV1;
 
-					float t = (modulo[i]) / (sumatorio);
-
-					coordtext[i * slices + j].s = s;
-					coordtext[i * slices + j].t = t;
-				}
-
-			}
+			modulo[i - 2] = sumatorio;
 		}
-		else {
-			for (int i = 0; i < slices; i++) {
-				float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-				coordtext[i].s = s;
-				coordtext[i].t = t;
-			}
-			coordtext[tamaGeometriaCoordText - 1].s = 0.5;
-			coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
-			float *modulo = new float[numPuntosPerfil - 2];
+		std::cout << sumatorio << std::endl;
 
-			for (int j = 0; j < slices; j++) {
+		for (int i = 2; i < numPuntosPerfil - 2; i++) {
 
-				float s = j * float(float(1) / float(slices));
+			float t = (modulo[i - 2]) / (sumatorio);
 
-				float sumatorio = 0;
+			//if (i > 2 && j == 1) std::cout << modulo[i - 2] << " - " << t << std::endl;
 
-				modulo[0] = sumatorio;
-
-				for (int i = 3; i < numPuntosPerfil; i++) {
-
-					PuntosVertices p1 = geometria[(i - 1) * slices + j].vertice;
-					PuntosVertices p2 = geometria[(i - 1) * slices + j - 1].vertice;
-
-					PuntosVertices v1;
-					v1.x = p1.x - p2.x;
-					v1.y = p1.y - p2.y;
-					v1.z = p1.z - p2.z;
-
-					float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-
-					sumatorio += modV1;
-
-					modulo[i - 2] = sumatorio;
-				}
-
-				for (int i = 2; i < numPuntosPerfil; i++) {
-
-					float t = (modulo[i - 2]) / (sumatorio);
-
-					coordtext[(i - 1) * slices + j].s = s;
-					coordtext[(i - 1) * slices + j].t = t;;
-				}
-
-			}
-		}
-	}
-	else {
-		float *modulo = new float[numPuntosPerfil];
-
-		for (int j = 0; j < slices; j++) {
-
-			float s = j * float(float(1) / float(slices));
-
-			float sumatorio = 0;
-
-			modulo[0] = sumatorio;
-
-			for (int i = 1; i < numPuntosPerfil; i++) {
-
-				PuntosVertices p1 = geometria[i * slices + j].vertice;
-				PuntosVertices p2 = geometria[i * slices + j - 1].vertice;
-
-				PuntosVertices v1;
-				v1.x = p1.x - p2.x;
-				v1.y = p1.y - p2.y;
-				v1.z = p1.z - p2.z;
-
-				float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
-
-				sumatorio += modV1;
-
-				modulo[i] = sumatorio;
-			}
-
-			for (int i = 0; i < numPuntosPerfil; i++) {
-
-				float t = (modulo[i]) / (sumatorio);
-
-				coordtext[i * slices + j].s = s;
-				coordtext[i * slices + j].t = t;
-			}
-
+			coordtext[(i - cambioIndice) * slices + j].s = s;
+			coordtext[(i - cambioIndice) * slices + j].t = t;
 		}
 	}
 
@@ -618,10 +257,10 @@ void PagRevolutionObject::revolution() {
 
 	if (flagBottomTape && flagTopTape) {
 		int k = 1;
-		indices[0] = tamaGeometriaCoordText-2;
+		indices[0] = tamaGeometriaCoordText - 2;
 		for (int i = 0; i < slices; i++) {
 			indices[k] = i;
-			k ++;
+			k++;
 		}
 		for (int i = 0; i < slices; i++) {
 			for (int j = 2; j < numPuntosPerfil - 3; j++) {
@@ -689,4 +328,4 @@ void PagRevolutionObject::revolution() {
 	}
 }
 
-PagRevolutionObject::~PagRevolutionObject(){}
+PagRevolutionObject::~PagRevolutionObject() {}

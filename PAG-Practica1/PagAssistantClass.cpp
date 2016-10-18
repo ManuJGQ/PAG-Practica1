@@ -110,7 +110,8 @@ void PagAssistantClass::devolverDatos() {
 			<< geometria[i].normal.z << ","
 			<< geometria[i].tangente.x << ","
 			<< geometria[i].tangente.y << ","
-			<< geometria[i].tangente.z << std::endl;
+			<< geometria[i].tangente.z << " - "
+			<< i << std::endl;
 	}
 	ficheroGeom.close();
 
