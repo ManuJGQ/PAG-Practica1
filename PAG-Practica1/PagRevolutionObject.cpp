@@ -28,8 +28,14 @@ void PagRevolutionObject::revolution() {
 	if (flagBottomTape) {
 		numTapas++;
 		cambioIndice++;
+
+		indicesBottomTape = new int[slices + 1];
 	}
-	if (flagTopTape) numTapas++;
+	if (flagTopTape) {
+		numTapas++;
+
+		indicesTopTape = new int[slices + 1];
+	}
 
 	tamaGeometriaCoordText = ((numPuntosPerfil - numTapas) * slices) + numTapas;
 	tamaIndices = (((numPuntosPerfil - (numTapas * 2)) * 2) + 1) * slices;
@@ -259,76 +265,31 @@ void PagRevolutionObject::revolution() {
 
 	// INDICES
 
-	if (flagBottomTape && flagTopTape) {
-		int k = 1;
-		indices[0] = tamaGeometriaCoordText - 2;
+	if (flagBottomTape) {
+		int w = 0;
 		for (int i = 0; i < slices; i++) {
-			indices[k] = i;
-			k++;
+			indicesBottomTape[w] = i;
+			w++;
 		}
-		for (int i = 0; i < slices; i++) {
-			for (int j = 2; j < numPuntosPerfil - 3; j++) {
-				indices[k] = i + (j * (slices + 1));
-				indices[k + 1] = (i + 1) + (j * (slices + 1));
-				k += 2;
-			}
-			indices[k] = 0xFFFF;
-			k++;
-		}
-		for (int i = 0; i < slices; i++) {
-			indices[k] = (numPuntosPerfil - 3) * slices + i;
-			k++;
-		}
-		indices[k] = tamaGeometriaCoordText - 1;
-
+		indicesBottomTape[w] = tamaGeometriaCoordText - numTapas;
 	}
-	else if (flagBottomTape || flagTopTape) {
-		if (flagBottomTape) {
-			int k = 1;
-			indices[0] = slices;
-			for (int i = 0; i < slices; i++) {
-				indices[k] = i;
-				k++;
-			}
-			for (int j = 2; j < numPuntosPerfil; j++) {
-				for (int i = 0; i < slices; i++) {
-					indices[k] = i + (j * (slices + 1));
-					indices[k + 1] = (i + 1) + (j * (slices + 1));
-					k += 2;
-				}
-				indices[k] = 0xFFFF;
-				k++;
-			}
-		}
-		else {
-			int k = 0;
-			for (int i = 0; i < slices; i++) {
-				for (int j = 0; j < numPuntosPerfil - 2; j++) {
-					indices[k] = i + (j * (slices + 1));
-					indices[k + 1] = (i + 1) + (j * (slices + 1));
-					k += 2;
-				}
-				indices[k] = 0xFFFF;
-				k++;
-			}
-			for (int i = 0; i < slices; i++) {
-				indices[k] = i;
-				k++;
-			}
-			indices[k] = slices;
-		}
-	}
-	else {
-		int k = 0;
+	if (flagTopTape) {
+		int u = 0;
 		for (int i = 0; i < slices; i++) {
-			for (int j = 0; j < numPuntosPerfil; j++) {
-				indices[k] = i + (j * (slices + 1));
-				indices[k + 1] = (i + 1) + (j * (slices + 1));
-				k += 2;
-			}
-			indices[k] = 0xFFFF;
-			k++;
+			indicesTopTape[u] = (tamaGeometriaCoordText - numTapas - slices) + i;
+			u++;
 		}
+		indicesTopTape[u] = tamaGeometriaCoordText - 1;
+	}
+	int k = 0;
+	for (int i = 0; i < slices; i++) {
+		for (int j = cambioIndice * 2; j < numPuntosPerfil - ((cambioIndice - numTapas) * -2); j++) {
+			indices[k] = i + (j * slices);
+			indices[k + 1] = ((i + 1) % slices) + (j * slices);
+			k += 2;
+		}
+		indices[k] = 0xFFFF;
+		k++;
 	}
 }
 

@@ -15,8 +15,8 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices, std::str
 	int numPuntosPerfilOriginal;
 	int numDivisiones;
 	int coma;
-	bool flagBottomTape = false;
-	bool flagTopTape = false;
+	flagBottomTape = false;
+	flagTopTape = false;
 	try {
 		// Leemos la primera linea del archivo
 		std::ifstream archivoPuntosPerfil;
@@ -73,12 +73,12 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices, std::str
 		revolutionObject = PagRevolutionObject(numPuntosPerfilOriginal, numDivisiones, *perfil, 
 			flagBottomTape, flagTopTape, slices);
 
+		devolverDatos();
 	}
 	catch (std::string &e) {
 		std::cout << "ERROR: " << e << std::endl;
 	}
 
-	devolverDatos();
 }
 
 void PagAssistantClass::devolverDatos() {
@@ -87,6 +87,7 @@ void PagAssistantClass::devolverDatos() {
 	int *indices = &revolutionObject.getIndices();
 	int tamaGeometriaCoordText = revolutionObject.getTamaGeometriaCoordText();
 	int tamaIndices = revolutionObject.getTamaIndices();
+	int tamIndicesTapes = revolutionObject.getTamaIndicesTapes();
 
 	char* docdir = getenv("userprofile");
 	std::string path = docdir;
@@ -110,8 +111,7 @@ void PagAssistantClass::devolverDatos() {
 			<< geometria[i].normal.z << ","
 			<< geometria[i].tangente.x << ","
 			<< geometria[i].tangente.y << ","
-			<< geometria[i].tangente.z << " - "
-			<< i << std::endl;
+			<< geometria[i].tangente.z << std::endl;
 	}
 	ficheroGeom.close();
 
@@ -128,7 +128,7 @@ void PagAssistantClass::devolverDatos() {
 	}
 	ficheroText.close();
 
-	//ARCHIVO INDICES
+	//ARCHIVOS INDICES
 
 	nombreFichero = path;
 	nombreFichero += "-out-ind.txt";
@@ -139,6 +139,32 @@ void PagAssistantClass::devolverDatos() {
 		ficheroInd << indices[i] << std::endl;
 	}
 	ficheroInd.close();
+
+	if (flagBottomTape) {
+		int *indicesBottom = &revolutionObject.getIndicesBottomTape();
+		nombreFichero = path;
+		nombreFichero += "-out-ind_BottomTape.txt";
+		std::ofstream ficheroIndBottom;
+		ficheroIndBottom.open(nombreFichero);
+		ficheroIndBottom << tamIndicesTapes << std::endl;
+		for (int i = 0; i < tamIndicesTapes; i++) {
+			ficheroIndBottom << indicesBottom[i] << std::endl;
+		}
+		ficheroInd.close();
+	}
+
+	if (flagTopTape) {
+		int *indicesTop = &revolutionObject.getIndicesTopTape();
+		nombreFichero = path;
+		nombreFichero += "-out-ind_TopTape.txt";
+		std::ofstream ficheroIndTop;
+		ficheroIndTop.open(nombreFichero);
+		ficheroIndTop << tamIndicesTapes << std::endl;
+		for (int i = 0; i < tamIndicesTapes; i++) {
+			ficheroIndTop << indicesTop[i] << std::endl;
+		}
+		ficheroIndTop.close();
+	}
 }
 
 PagAssistantClass::~PagAssistantClass(){}

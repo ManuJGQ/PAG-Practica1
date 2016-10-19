@@ -14,6 +14,8 @@ class PagRevolutionObject{
 	Geometria *geometria;
 	CoordTexturas *coordtext;
 	int *indices;
+	int *indicesBottomTape;
+	int *indicesTopTape;
 	void revolution();
 	int slices;
 	int tamaGeometriaCoordText;
@@ -25,8 +27,11 @@ public:
 	Geometria& getGeometria() { return *geometria; }
 	CoordTexturas& getCoordText() { return *coordtext; }
 	int& getIndices() { return *indices; }
+	int& getIndicesBottomTape() { return *indicesBottomTape; }
+	int& getIndicesTopTape() { return *indicesTopTape; }
 	int getTamaGeometriaCoordText() { return tamaGeometriaCoordText; }
 	int getTamaIndices() { return tamaIndices; }
+	int getTamaIndicesTapes() { return slices + 1; }
 	~PagRevolutionObject();
 };
 
