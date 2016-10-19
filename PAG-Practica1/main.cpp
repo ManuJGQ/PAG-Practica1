@@ -19,7 +19,6 @@ int main(int argc, char** argv) {
 	std::cout << "Escriba el numero de slices" << std::endl;
 	std::cin >> slices;
 	PagAssistantClass(path, slices, archivo);
-	std::cout << "FIN" << std::endl;
 	system("pause");
 	return 0;
 }

@@ -56,7 +56,6 @@ void PagRevolutionObject::revolution() {
 			vert.y = perfil[j].y;
 			vert.z = 0;
 			geometria[tamaGeometriaCoordText - numTapas].vertice = vert;
-			std::cout << numPuntosPerfil << std::endl;
 		}
 		else if (j == numPuntosPerfil - 1 && flagTopTape) {
 			PuntosVertices vert;

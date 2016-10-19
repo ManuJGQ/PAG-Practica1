@@ -9,7 +9,6 @@ PagAssistantClass::PagAssistantClass(std::string archivoIN, int slices, std::str
 	int linea;
 	linea = _nombreAlumno.find('-');
 	nombreAlumno = _nombreAlumno.substr(0, linea);
-	std::cout << nombreAlumno << std::endl;
 
 	std::string linea_actual;
 	int numPuntosPerfilOriginal;
