@@ -198,20 +198,30 @@ void PagRevolutionObject::revolution() {
 
 	// COORDENADAS TEXTURAS
 
-	for (int i = 0; i < slices; i++) {
-		float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
-		float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
-		coordtext[i].s = s;
-		coordtext[i].t = t;
-		coordtext[(numPuntosPerfil - 3) * slices + i].s = s;
-		coordtext[(numPuntosPerfil - 3) * slices + i].t = t;
+	if (flagBottomTape || flagTopTape) {
+		for (int i = 0; i < slices; i++) {
+			float s = (cos(angleRadIncrement * float(i)) / 2.0) + 0.5;
+			float t = (sin(angleRadIncrement * float(i)) / 2.0) + 0.5;
+			if (flagBottomTape) {
+				coordtext[i].s = s;
+				coordtext[i].t = t;
+			}
+			if (flagTopTape){
+				coordtext[(numPuntosPerfil - numTapas - 1) * slices + i].s = s;
+				coordtext[(numPuntosPerfil - numTapas - 1) * slices + i].t = t;
+			}
+		}
+		if (flagBottomTape) {
+			coordtext[tamaGeometriaCoordText - numTapas].s = 0.5;
+			coordtext[tamaGeometriaCoordText - numTapas].t = 0.5;
+		}
+		if (flagTopTape) {
+			coordtext[tamaGeometriaCoordText - 1].s = 0.5;
+			coordtext[tamaGeometriaCoordText - 1].t = 0.5;
+		}
 	}
-	coordtext[tamaGeometriaCoordText - 2].s = 0.5;
-	coordtext[tamaGeometriaCoordText - 2].t = 0.5;
-	coordtext[tamaGeometriaCoordText - 1].s = 0.5;
-	coordtext[tamaGeometriaCoordText - 1].t = 0.5;
 
-	float *modulo = new float[numPuntosPerfil - 4];
+	float *modulo = new float[numPuntosPerfil - (numTapas * 2)];
 
 	for (int j = 0; j < slices; j++) {
 
@@ -221,7 +231,7 @@ void PagRevolutionObject::revolution() {
 
 		modulo[0] = sumatorio;
 
-		for (int i = 3; i < numPuntosPerfil - 2; i++) {
+		for (int i = numTapas + 1; i < numPuntosPerfil - numTapas; i++) {
 
 			PuntosVertices p1 = geometria[(i - cambioIndice) * slices + j].vertice;
 			PuntosVertices p2 = geometria[(i - cambioIndice - 1) * slices + j].vertice;
@@ -231,8 +241,6 @@ void PagRevolutionObject::revolution() {
 			v1.y = p1.y - p2.y;
 			v1.z = p1.z - p2.z;
 
-			if(j==0) std::cout << (i - cambioIndice) * slices + j - 1 << std::endl;
-
 			float modV1 = sqrt((v1.x * v1.x) + (v1.y * v1.y) + (v1.z * v1.z));
 
 			sumatorio += modV1;
@@ -240,13 +248,9 @@ void PagRevolutionObject::revolution() {
 			modulo[i - 2] = sumatorio;
 		}
 
-		std::cout << sumatorio << std::endl;
-
 		for (int i = 2; i < numPuntosPerfil - 2; i++) {
 
 			float t = (modulo[i - 2]) / (sumatorio);
-
-			//if (i > 2 && j == 1) std::cout << modulo[i - 2] << " - " << t << std::endl;
 
 			coordtext[(i - cambioIndice) * slices + j].s = s;
 			coordtext[(i - cambioIndice) * slices + j].t = t;
