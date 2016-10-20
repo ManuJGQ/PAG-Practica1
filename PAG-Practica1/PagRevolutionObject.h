@@ -1,12 +1,6 @@
 #include <iostream>
 #include "PagSubdivisionProfile.h"
 
-struct Geometria {
-	PuntosVertices vertice;
-	NormalesTangentes normal;
-	NormalesTangentes tangente;
-};
-
 class PagRevolutionObject{
 	bool flagBottomTape;
 	bool flagTopTape;

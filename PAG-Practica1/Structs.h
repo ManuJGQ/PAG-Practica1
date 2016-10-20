@@ -22,4 +22,10 @@ namespace Structs {
 		float s;
 		float t;
 	};
+
+	struct Geometria {
+		PuntosVertices vertice;
+		NormalesTangentes normal;
+		NormalesTangentes tangente;
+	};
 }
