@@ -17,6 +17,8 @@ PagRevolutionObject::PagRevolutionObject(int _numPuntosPerfilOriginal, int _numD
 
 	slices = _slices;
 
+	if (slices == 0) slices++;
+
 	revolution();
 }
 
